@@ -1,43 +1,64 @@
-# Chirpy Starter
-
-[![Gem Version](https://img.shields.io/gem/v/jekyll-theme-chirpy)][gem]&nbsp;
-[![GitHub license](https://img.shields.io/github/license/cotes2020/chirpy-starter.svg?color=blue)][mit]
-
-When installing the [**Chirpy**][chirpy] theme through [RubyGems.org][gem], Jekyll can only read files in the folders
-`_data`, `_layouts`, `_includes`, `_sass` and `assets`, as well as a small part of options of the `_config.yml` file
-from the theme's gem. If you have ever installed this theme gem, you can use the command
-`bundle info --path jekyll-theme-chirpy` to locate these files.
-
-The Jekyll team claims that this is to leave the ball in the user’s court, but this also results in users not being
-able to enjoy the out-of-the-box experience when using feature-rich themes.
-
-To fully use all the features of **Chirpy**, you need to copy the other critical files from the theme's gem to your
-Jekyll site. The following is a list of targets:
-
-```shell
-.
-├── _config.yml
-├── _plugins
-├── _tabs
-└── index.html
+# Ali Janloo's Personal Blog[![Website](https://img.shields.io/badge/Website-alijanloo.github.io-blue)](https://alijanloo.github.io)[![Jekyll](https://img.shields.io/badge/Jekyll-4.x-red.svg)](https://jekyllrb.com/)[![Theme](https://img.shields.io/badge/Theme-Chirpy-success.svg)](https://github.com/cotes2020/jekyll-theme-chirpy)[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)Welcome to the source code of my personal blog! This site is built with Jekyll using the beautiful Chirpy theme, where I share insights about AI, machine learning, NLP, and software development.## 🎯 About This BlogThis is my personal space to:- 🤖 Share knowledge about **Machine Learning & NLP**- 🐍 Write tutorials on **Python Development**- 📊 Discuss **Data Science** techniques and tools- 🔬 Summarize and implement **AI Research**- 🛠️ Showcase **Open Source Projects**## 🚀 Quick Start### Prerequisites- Ruby 2.7+ ([installation guide](https://www.ruby-lang.org/en/documentation/installation/))- Jekyll 4.x- Bundler### Local Development```bash# Install dependenciesbundle install# Run local server./tools/run.sh# Or alternativelybundle exec jekyll serve```Visit `http://localhost:4000` to preview the site.### Build for Production```bash
+./tools/test.sh
 ```
 
-To save you time, and also in case you lose some files while copying, we extract those files/configurations of the
-latest version of the **Chirpy** theme and the [CD][CD] workflow to here, so that you can start writing in minutes.
+## 📁 Project Structure
 
-## Usage
+See [project_tree.md](project_tree.md) for a detailed guide on the project structure and how to customize the blog.
 
-Check out the [theme's docs](https://github.com/cotes2020/jekyll-theme-chirpy/wiki).
+## 📝 Writing Posts
 
-## Contributing
+Create new posts in `_posts/` directory with the naming format:
+```
+YYYY-MM-DD-post-title.md
+```
 
-This repository is automatically updated with new releases from the theme repository. If you encounter any issues or want to contribute to its improvement, please visit the [theme repository][chirpy] to provide feedback.
+Example post structure:
+```markdown
+---
+title: "Your Post Title"
+date: YYYY-MM-DD HH:MM:SS +TIMEZONE
+categories: [Category1, Category2]
+tags: [tag1, tag2, tag3]
+author: Ali Janloo
+---
 
-## License
+Your content here...
+```
 
-This work is published under [MIT][mit] License.
+## 🎨 Customization
 
-[gem]: https://rubygems.org/gems/jekyll-theme-chirpy
-[chirpy]: https://github.com/cotes2020/jekyll-theme-chirpy/
-[CD]: https://en.wikipedia.org/wiki/Continuous_deployment
-[mit]: https://github.com/cotes2020/chirpy-starter/blob/master/LICENSE
+Key files to customize:
+- `_config.yml` - Site configuration
+- `_data/contact.yml` - Social media links
+- `_tabs/about.md` - About page
+- `assets/img/avatar.jpg` - Profile picture (add your own)
+- `assets/img/favicons/` - Browser icons
+
+## 📚 Theme Documentation
+
+This blog uses the **Chirpy** theme. For detailed theme documentation:
+- [Chirpy Theme Wiki](https://github.com/cotes2020/jekyll-theme-chirpy/wiki)
+- [Jekyll Documentation](https://jekyllrb.com/docs/)
+
+## 🌐 Deployment
+
+This site is automatically deployed to GitHub Pages on push to the main branch.
+
+## 📬 Contact
+
+Feel free to reach out!
+
+- 💼 [LinkedIn](https://www.linkedin.com/in/ali-janloo/)
+- 🐙 [GitHub](https://github.com/Alijanloo)
+- 📧 [Email](mailto:mahmoodjanlooali@gmail.com)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+The Chirpy theme is also under MIT License.
+
+---
+
+**Made with ❤️ by Ali Janloo**

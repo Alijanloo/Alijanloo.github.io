@@ -1,0 +1,30 @@
+---
+permalink: /robots.txt
+# Custom robots.txt for Ali Janloo's blog
+---
+
+# robots.txt for alijanloo.github.io
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: {{ '/sitemap.xml' | absolute_url }}
+
+# Disallow crawling of admin/draft areas
+User-agent: *
+Disallow: /assets/lib/
+
+# Allow Google, Bing, Yandex specifically
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# Crawl delay (optional, adjust if needed)
+Crawl-delay: 1

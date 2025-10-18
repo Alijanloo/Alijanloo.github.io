@@ -2,11 +2,12 @@
 # the default layout is 'page'
 icon: fas fa-info-circle
 order: 4
+title: About Ali Janloo | علی جانلو
 ---
 
-# 👋 Hi, I'm Ali Janloo
+# 👋 Hi, I'm Ali Janloo | علی جانلو
 
-🎓 Computer Science graduate from **Ferdowsi University of Mashhad**  
+🎓 Computer Science graduate from **Ferdowsi University of Mashhad** (دانشگاه فردوسی مشهد)  
 🤖 Passionate about **NLP, and machine learning**  
 💡 Building intelligent systems and open-source tools that bridge theory and real-world applications.
 

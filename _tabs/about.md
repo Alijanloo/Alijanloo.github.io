@@ -2,7 +2,7 @@
 # the default layout is 'page'
 icon: fas fa-info-circle
 order: 4
-title: About Ali Janloo | علی جانلو
+title: About Me
 ---
 
 <div id="github-readme-container">

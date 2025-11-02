@@ -79,6 +79,16 @@
       }
     }
     
+    // Check if we're on the about page
+    if (currentPath.includes('/about')) {
+      if (currentLang === 'en') {
+        window.location.href = '/about_fa/';
+      } else {
+        window.location.href = '/about/';
+      }
+      return;
+    }
+    
     // For all other pages, just reload to apply the language filter
     window.location.reload();
   };
@@ -110,6 +120,31 @@
       const faText = tab.getAttribute('data-fa');
       if (enText && faText) {
         tab.textContent = lang === 'fa' ? faText : enText;
+      }
+    });
+    
+    // Hide/show language-specific tabs
+    filterTabs(lang);
+  }
+  
+  /**
+   * Filter tabs based on language
+   */
+  function filterTabs(lang) {
+    const navItems = document.querySelectorAll('#sidebar .nav-item');
+    navItems.forEach(item => {
+      const link = item.querySelector('a');
+      if (!link) return;
+      
+      const href = link.getAttribute('href');
+      
+      // Check if this is a language-specific tab (like about/about_fa)
+      if (href.includes('/about_fa/')) {
+        // Persian about page - show only in Persian mode
+        item.style.display = lang === 'fa' ? '' : 'none';
+      } else if (href.includes('/about/') && !href.includes('/about_fa/')) {
+        // English about page - show only in English mode
+        item.style.display = lang === 'en' ? '' : 'none';
       }
     });
   }
@@ -198,6 +233,24 @@
         item.style.display = 'none';
       } else {
         item.style.display = '';
+      }
+    });
+    
+    // Update tab links for language-specific pages
+    updateTabLinks(lang);
+  }
+  
+  /**
+   * Update tab links to point to language-specific versions
+   */
+  function updateTabLinks(lang) {
+    // Update About link
+    const aboutLinks = document.querySelectorAll('a[href="/about/"], a[href="/about_fa/"]');
+    aboutLinks.forEach(link => {
+      if (lang === 'fa') {
+        link.setAttribute('href', '/about_fa/');
+      } else {
+        link.setAttribute('href', '/about/');
       }
     });
   }

@@ -9,8 +9,8 @@
   {% assign current_lang = site.lang | default: 'en' %}
 {% endif %}
 
-<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end" data-current-lang="{{ current_lang }}">
-  <header class="profile-wrapper">
+<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-center" data-current-lang="{{ current_lang }}">
+  <header class="profile-wrapper text-center w-100">
     <a href="{{ '/' | relative_url }}" id="avatar" class="rounded-circle">
       {%- if site.avatar != empty and site.avatar -%}
         {%- capture avatar_url -%}

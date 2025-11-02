@@ -1,6 +1,24 @@
 ---
 ---
 
+/* Sidebar Header Adjustments */
+#sidebar .profile-wrapper {
+  text-align: center;
+  padding: 1.5rem 0;
+  margin-bottom: 0.5rem;
+}
+
+#sidebar .profile-wrapper #avatar {
+  display: inline-block;
+  margin: 0 auto 0.5rem;
+}
+
+#sidebar .profile-wrapper .site-title {
+  text-align: center;
+  margin: 0.5rem 0 0;
+  line-height: 1.2;
+}
+
 /* Sidebar Toggles Container */
 .sidebar-toggles {
   padding: 1rem 0;

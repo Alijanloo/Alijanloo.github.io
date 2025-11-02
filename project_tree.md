@@ -11,26 +11,71 @@ Alijanloo.github.io/
 ├── _config.yml              # Main site configuration (IMPORTANT!)
 ├── _data/
 │   ├── contact.yml          # Social media links in sidebar
-│   └── share.yml            # Social sharing options
+│   ├── share.yml            # Social sharing options
+│   └── locales/             # Language translations
+│       ├── en.yml           # English UI translations
+│       └── fa.yml           # Persian UI translations
 ├── _posts/                  # Your blog posts go here
-│   └── .placeholder         # Empty - add posts in YYYY-MM-DD-title.md format
 ├── _tabs/                   # Static pages accessible from sidebar
 │   ├── about.md             # About page (customize with your bio)
 │   ├── archives.md          # Archive page (auto-generated)
 │   ├── categories.md        # Categories page (auto-generated)
 │   └── tags.md              # Tags page (auto-generated)
+├── _layouts/                # Custom layout overrides
+│   ├── home.html            # Homepage with language filtering
+│   ├── archives.html        # Archives with language filtering
+│   ├── categories.html      # Categories with language filtering
+│   └── tags.html            # Tags with language filtering
+├── _includes/               # Custom include files
+│   ├── sidebar.html         # Sidebar with language toggle
+│   ├── page-lang.html       # Page language detection
+│   └── metadata-hook.html   # Custom scripts and styles
 ├── _plugins/                # Jekyll plugins
+│   ├── posts-lastmod-hook.rb       # Post modification tracking
+│   ├── language-handler.rb         # Bilingual post handler
+│   └── language-filter.rb          # Language content filtering
 ├── assets/
 │   ├── img/
 │   │   └── favicons/        # Website favicon images
+│   ├── css/
+│   │   └── lang-toggle.css  # Language toggle & RTL styles
+│   ├── js/
+│   │   └── lang-toggle.js   # Language switching logic
 │   └── lib/                 # External libraries
 ├── tools/
 │   ├── run.sh               # Local development server script
 │   └── test.sh              # Build for production script
 ├── index.html               # Homepage layout
 ├── Gemfile                  # Ruby dependencies
-└── README.md                # Project documentation
+├── README.md                # Project documentation
+├── MULTILINGUAL_GUIDE.md    # Guide for creating bilingual posts
+└── LANGUAGE_TOGGLE_SUMMARY.md  # Language feature summary
 ```
+
+---
+
+## 🌐 Bilingual Features
+
+### Language Toggle
+- **Location**: Above navigation tabs in sidebar
+- **Switch Style**: EN/FA toggle switch with theme-aware colors
+- **Functionality**: Switches between English and Persian content
+- **Auto-detection**: Detects browser language on first visit
+- **Persistence**: Saves preference in localStorage
+
+### Persian Post Support
+- **Naming**: Add `_fa.md` suffix to filename for Persian posts
+- **Example**: 
+  - English: `2025-11-03-my-post.md`
+  - Persian: `2025-11-03-my-post_fa.md`
+- **Content**: Persian post content is rendered RTL (right-to-left)
+- **Layout**: Site structure remains LTR, only content is RTL
+
+### Language Filtering
+- Posts, categories, and tags are filtered based on selected language
+- English mode shows only English posts and their categories/tags
+- Persian mode shows only Persian posts and their categories/tags
+- Switching between post versions (if both exist) is automatic
 
 ---
 
@@ -43,7 +88,7 @@ Alijanloo.github.io/
 
 **What to customize:**
 - `title`: Your site title (e.g., "Ali Janloo")
-- `tagline`: Site subtitle/description
+- `tagline`: Site subtitle/description (removed from sidebar but still used in SEO)
 - `description`: SEO meta description
 - `url`: Your website URL (e.g., "https://alijanloo.github.io")
 - `github.username`: Your GitHub username
@@ -53,6 +98,7 @@ Alijanloo.github.io/
 - `social.links`: Links to your social profiles
 - `avatar`: Path to your profile picture (e.g., `/assets/img/avatar.jpg`)
 - `timezone`: Your timezone (e.g., "Asia/Tehran")
+- `lang`: Default language (`en` or `fa`)
 
 #### 2. `_data/contact.yml` (Sidebar Social Links)
 **Priority: HIGH**
@@ -63,7 +109,21 @@ Alijanloo.github.io/
 - Update GitHub, Twitter, Email links
 - Can add Stack Overflow, Reddit, etc.
 
-#### 3. `_tabs/about.md` (About Page)
+#### 3. `_data/locales/` (UI Translations)
+**Priority: MEDIUM**
+
+**Files:**
+- `en.yml` - English UI text (tabs, buttons, labels)
+- `fa.yml` - Persian UI text (tabs, buttons, labels)
+
+**What to customize:**
+- Tab names (Home, Categories, Tags, etc.)
+- Button labels
+- Post metadata labels
+- Search text
+- Date formats
+
+#### 4. `_tabs/about.md` (About Page)
 **Priority: HIGH**
 
 **What to customize:**
@@ -125,100 +185,9 @@ In `_config.yml`, set:
 - `theme_mode: dark` - Dark mode only
 - `theme_mode:` (empty) - Auto-detect system preference with toggle
 
----
-
-## 🚀 Development Workflow
-
-### **Local Development**
-```bash
-# Run the development server
-./tools/run.sh
-
-# Or use VS Code task: "Run Jekyll Server"
-```
-
-The site will be available at `http://localhost:4000`
-
-### **Build for Production**
-```bash
-./tools/test.sh
-
-# Or use VS Code task: "Build Jekyll Site"
-```
-
-### **Deploy**
-Commit and push to GitHub. If GitHub Pages is enabled, it will auto-deploy.
-
----
-
-## 📋 Customization Checklist
-
-Use this checklist to personalize your blog:
-
-### Phase 1: Basic Information
-- [ ] Update `_config.yml` with your name, email, username
-- [ ] Set correct `url` and `baseurl` in `_config.yml`
-- [ ] Configure `timezone` in `_config.yml`
-- [ ] Update `_data/contact.yml` with social links
-- [ ] Add LinkedIn to `_data/contact.yml`
-
-### Phase 2: Content
-- [ ] Write your `_tabs/about.md` page
-- [ ] Add your profile picture as avatar
-- [ ] Replace favicon images
-- [ ] Update `README.md` with project details
-
-### Phase 3: Styling (Optional)
-- [ ] Choose theme mode (light/dark)
-- [ ] Configure analytics (Google Analytics, etc.)
-- [ ] Set up comments system (Disqus, Giscus, etc.)
-- [ ] Add custom CSS if needed
-
-### Phase 4: Content Creation
-- [ ] Write your first blog post
-- [ ] Add post images to `/assets/img/posts/`
-- [ ] Create categories and tags structure
-- [ ] Add sample projects or portfolio items
-
----
-
-## 🔍 Key Features of Chirpy Theme
-
-- ✅ Responsive design
-- ✅ Dark/Light theme toggle
-- ✅ Code syntax highlighting
-- ✅ Table of Contents (TOC) in posts
-- ✅ Categories and tags
-- ✅ Search functionality
-- ✅ SEO optimized
-- ✅ PWA support (installable)
-- ✅ Comments support (optional)
-- ✅ Analytics integration
-
----
-
-## 📚 Additional Resources
-
-- [Chirpy Theme Documentation](https://github.com/cotes2020/jekyll-theme-chirpy/wiki)
-- [Jekyll Documentation](https://jekyllrb.com/docs/)
-- [Markdown Guide](https://www.markdownguide.org/)
-- [Font Awesome Icons](https://fontawesome.com/icons) (for social icons)
-
----
-
-## 🐛 Troubleshooting
-
-**Issue:** Changes not showing up?
-- **Solution:** Restart the Jekyll server (`Ctrl+C` then `./tools/run.sh` again)
-
-**Issue:** Build errors?
-- **Solution:** Check `_config.yml` syntax (use YAML validator)
-
-**Issue:** CSS not loading?
-- **Solution:** Clear browser cache or try incognito mode
-
----
-
-**Happy Blogging! 🚀**
-
-*Last Updated: October 18, 2025*
+### **Language Toggle Styling**
+Edit `/assets/css/lang-toggle.css` to customize:
+- Toggle switch colors
+- Label styles
+- RTL content behavior
+- Persian font settings

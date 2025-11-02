@@ -89,6 +89,29 @@
   function applyLanguage(lang) {
     const htmlElement = document.documentElement;
     htmlElement.setAttribute('lang', lang);
+    
+    // Update site title
+    const titleEn = document.querySelector('.title-en');
+    const titleFa = document.querySelector('.title-fa');
+    if (titleEn && titleFa) {
+      if (lang === 'fa') {
+        titleEn.style.display = 'none';
+        titleFa.style.display = 'inline';
+      } else {
+        titleEn.style.display = 'inline';
+        titleFa.style.display = 'none';
+      }
+    }
+    
+    // Update tab texts
+    const tabTexts = document.querySelectorAll('.tab-text');
+    tabTexts.forEach(tab => {
+      const enText = tab.getAttribute('data-en');
+      const faText = tab.getAttribute('data-fa');
+      if (enText && faText) {
+        tab.textContent = lang === 'fa' ? faText : enText;
+      }
+    });
   }
 
   /**

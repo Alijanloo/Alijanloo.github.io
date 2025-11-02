@@ -1,5 +1,10 @@
 # The layout text of site
 
+# Site information
+site:
+  title: Ali Janloo
+  tagline: ML Engineer | NLP Enthusiast | AI Developer
+
 # ----- Commons label -----
 
 layout:

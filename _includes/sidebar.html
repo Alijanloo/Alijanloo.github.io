@@ -1,6 +1,15 @@
 <!-- The Side Bar -->
 
-<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end">
+{% comment %}
+  Detect current language from page or use default
+{% endcomment %}
+{% if page.lang %}
+  {% assign current_lang = page.lang %}
+{% else %}
+  {% assign current_lang = site.lang | default: 'en' %}
+{% endif %}
+
+<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end" data-current-lang="{{ current_lang }}">
   <header class="profile-wrapper">
     <a href="{{ '/' | relative_url }}" id="avatar" class="rounded-circle">
       {%- if site.avatar != empty and site.avatar -%}
@@ -11,8 +20,11 @@
       {%- endif -%}
     </a>
 
-    <h1 class="site-title">
-      <a href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <h1 class="site-title" id="site-title-text">
+      <a href="{{ '/' | relative_url }}">
+        <span class="title-en" data-title="{{ site.data.locales.en.site.title | default: site.title }}">{{ site.data.locales.en.site.title | default: site.title }}</span>
+        <span class="title-fa" data-title="{{ site.data.locales.fa.site.title | default: site.title }}" style="display: none;">{{ site.data.locales.fa.site.title | default: site.title }}</span>
+      </a>
     </h1>
   </header>
   <!-- .profile-wrapper -->
@@ -44,7 +56,7 @@
       <li class="nav-item{% if page.layout == 'home' %}{{ " active" }}{% endif %}">
         <a href="{{ '/' | relative_url }}" class="nav-link">
           <i class="fa-fw fas fa-home"></i>
-          <span>{{ site.data.locales[include.lang].tabs.home | upcase }}</span>
+          <span class="tab-text" data-en="{{ site.data.locales.en.tabs.home | upcase }}" data-fa="{{ site.data.locales.fa.tabs.home | upcase }}">{{ site.data.locales[current_lang].tabs.home | upcase }}</span>
         </a>
       </li>
       <!-- the real tabs -->
@@ -54,7 +66,7 @@
             <i class="fa-fw {{ tab.icon }}"></i>
             {% capture tab_name %}{{ tab.url | split: '/' }}{% endcapture %}
 
-            <span>{{ site.data.locales[include.lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
+            <span class="tab-text" data-en="{{ site.data.locales.en.tabs.[tab_name] | default: tab.title | upcase }}" data-fa="{{ site.data.locales.fa.tabs.[tab_name] | default: tab.title | upcase }}">{{ site.data.locales[current_lang].tabs.[tab_name] | default: tab.title | upcase }}</span>
           </a>
         </li>
         <!-- .nav-item -->

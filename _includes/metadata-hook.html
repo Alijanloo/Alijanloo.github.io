@@ -5,6 +5,16 @@
 <!-- Additional Open Graph tags for better social media sharing -->
 <meta property="og:locale:alternate" content="fa_IR">
 
+<!-- Language Toggle CSS and JavaScript -->
+<link rel="stylesheet" href="{{ '/assets/css/lang-toggle.css' | relative_url }}">
+<script src="{{ '/assets/js/lang-toggle.js' | relative_url }}" defer></script>
+
+<!-- Persian Font (Vazir) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css">
+
+<!-- Page Language Detection -->
+{% include page-lang.html %}
+
 <!-- Structured Data (JSON-LD) for Google Rich Results -->
 <script type="application/ld+json">
 {

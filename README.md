@@ -16,6 +16,16 @@ This is my personal space to:
 - 🔬 Summarize and implement **AI Research**
 - 🛠️ Showcase **Open Source Projects**
 
+### 🌐 Multilingual Support
+
+This blog supports **bilingual content** (English and Persian):
+- 🔄 **Automatic language detection** from browser settings
+- 🌍 **Manual language toggle** in the sidebar
+- 📝 **Parallel posts** in both languages (English/Persian)
+- 🎨 **RTL support** for Persian content with proper fonts
+
+See [MULTILINGUAL_GUIDE.md](MULTILINGUAL_GUIDE.md) for detailed instructions on creating bilingual posts.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -65,6 +75,31 @@ author: Ali Janloo
 
 Your content here...
 ```
+
+### Creating Bilingual Posts
+
+For Persian version of a post, create a file with `_fa` suffix:
+```
+_posts/YYYY-MM-DD-post-title.md        # English version
+_posts/YYYY-MM-DD-post-title_fa.md     # Persian version
+```
+
+Persian post front matter:
+```markdown
+---
+title: "عنوان پست به فارسی"
+date: YYYY-MM-DD HH:MM:SS +TIMEZONE
+categories: [دسته‌بندی۱, دسته‌بندی۲]
+tags: [برچسب۱, برچسب۲]
+author: علی جانلو
+lang: fa
+dir: rtl
+---
+
+محتوای فارسی...
+```
+
+See [MULTILINGUAL_GUIDE.md](MULTILINGUAL_GUIDE.md) for complete guide.
 
 ## 🎨 Customization
 

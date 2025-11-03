@@ -1,0 +1,8 @@
+# The primary author of this site.
+# This file is used by the Chirpy theme to display author information on posts.
+# Reference: https://github.com/cotes2020/jekyll-theme-chirpy/wiki/Writing-a-New-Post#author-information
+
+ali_janloo:
+  name: Ali Janloo
+  twitter: Alijanloo
+  url: https://github.com/Alijanloo

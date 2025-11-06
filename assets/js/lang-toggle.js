@@ -189,19 +189,50 @@
   }
 
   /**
-   * Filter posts, categories, and tags by language
+   * Filter posts, categories, and tags by language with pagination
    */
   function filterContentByLanguage(lang) {
-    // Filter post list items (home page)
+    // Update current language for pagination
+    if (window.languagePagination) {
+      window.languagePagination.currentLang = lang;
+      window.languagePagination.currentPage = 1; // Reset to first page when switching language
+    }
+    
+    // Filter and paginate post list items (home page)
     const postItems = document.querySelectorAll('article.card-wrapper[data-lang]');
-    postItems.forEach(item => {
+    const postsPerPage = window.languagePagination?.postsPerPage || 10;
+    
+    // Get posts for current language
+    const langPosts = Array.from(postItems).filter(item => {
       const itemLang = item.getAttribute('data-lang') || 'en';
-      if (itemLang !== lang) {
-        item.style.display = 'none';
-      } else {
-        item.style.display = '';
-      }
+      return itemLang === lang;
     });
+    
+    // Hide all posts first
+    postItems.forEach(item => {
+      item.style.display = 'none';
+    });
+    
+    // Show posts for current page
+    if (langPosts.length > 0) {
+      const currentPage = window.languagePagination?.currentPage || 1;
+      const startIndex = (currentPage - 1) * postsPerPage;
+      const endIndex = startIndex + postsPerPage;
+      const currentPagePosts = langPosts.slice(startIndex, endIndex);
+      
+      currentPagePosts.forEach(item => {
+        item.style.display = '';
+      });
+      
+      // Update pagination controls
+      updatePaginationControls(langPosts.length, postsPerPage, currentPage, lang);
+    } else {
+      // No posts for this language, hide pagination
+      const paginationControls = document.getElementById('pagination-controls');
+      if (paginationControls) {
+        paginationControls.style.display = 'none';
+      }
+    }
     
     // Filter category items
     const categoryItems = document.querySelectorAll('[data-category-lang]');
@@ -239,6 +270,83 @@
     // Update tab links for language-specific pages
     updateTabLinks(lang);
   }
+  
+  /**
+   * Update pagination controls
+   */
+  function updatePaginationControls(totalPosts, postsPerPage, currentPage, lang) {
+    const totalPages = Math.ceil(totalPosts / postsPerPage);
+    const paginationControls = document.getElementById('pagination-controls');
+    const paginationList = document.getElementById('pagination-list');
+    
+    if (!paginationList || totalPages <= 1) {
+      if (paginationControls) {
+        paginationControls.style.display = 'none';
+      }
+      return;
+    }
+    
+    paginationControls.style.display = '';
+    paginationList.innerHTML = '';
+    
+    // Previous button
+    if (currentPage > 1) {
+      const prevItem = createPaginationItem('‹', currentPage - 1, lang, false);
+      paginationList.appendChild(prevItem);
+    }
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+      const pageItem = createPaginationItem(i.toString(), i, lang, i === currentPage);
+      paginationList.appendChild(pageItem);
+    }
+    
+    // Next button
+    if (currentPage < totalPages) {
+      const nextItem = createPaginationItem('›', currentPage + 1, lang, false);
+      paginationList.appendChild(nextItem);
+    }
+  }
+  
+  /**
+   * Create pagination item
+   */
+  function createPaginationItem(text, page, lang, isActive) {
+    const li = document.createElement('li');
+    li.className = 'page-item' + (isActive ? ' active' : '');
+    
+    const a = document.createElement('a');
+    a.className = 'page-link';
+    a.href = '#';
+    a.textContent = text;
+    a.setAttribute('data-page', page);
+    
+    a.addEventListener('click', function(e) {
+      e.preventDefault();
+      goToPage(page, lang);
+    });
+    
+    li.appendChild(a);
+    return li;
+  }
+  
+  /**
+   * Go to specific page
+   */
+  window.goToPage = function(page, lang) {
+    if (window.languagePagination) {
+      window.languagePagination.currentPage = page;
+    }
+    
+    // Re-filter content with new page
+    filterContentByLanguage(lang);
+    
+    // Scroll to top of post list
+    const postList = document.getElementById('post-list');
+    if (postList) {
+      postList.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   
   /**
    * Update tab links to point to language-specific versions

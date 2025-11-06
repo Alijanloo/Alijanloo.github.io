@@ -166,3 +166,22 @@ html[data-mode='dark'] .project-pages a:hover {
 html[data-mode='dark'] .project-pages li.active a {
   color: rgba(255, 255, 255, 0.9);
 }
+
+/* Code block styling for project pages */
+.content .sourceCode {
+    background-color: rgb(40 45 53);
+    box-sizing: border-box;
+    color: rgb(240, 246, 252);
+    display: inherit;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 16px;
+    font-weight: 400;
+    justify-content: space-between;
+    line-height: 24px;
+    margin-bottom: 16px;
+    overflow-wrap: break-word;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 0.2rem;
+    position: relative;
+}

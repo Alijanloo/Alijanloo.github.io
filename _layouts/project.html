@@ -1,0 +1,33 @@
+---
+layout: default
+refactor: true
+panel_includes:
+  - toc
+tail_includes:
+  - related-posts
+  - post-nav
+  - comments
+---
+
+<article class="px-1">
+  <header>
+    <h1 data-toc-skip>{{ page.title }}</h1>
+    
+    {% if page.description %}
+      <p class="post-desc fw-light mb-4">{{ page.description }}</p>
+    {% endif %}
+  </header>
+
+  <div class="content">
+    {{ content }}
+  </div>
+
+  <div class="post-tail-wrapper text-muted">
+    <!-- Go back to projects -->
+    <nav class="post-navigation d-flex justify-content-between" aria-label="Post navigation">
+      <a href="/projects/" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left"></i> Back to Projects
+      </a>
+    </nav>
+  </div>
+</article>

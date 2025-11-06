@@ -71,6 +71,38 @@
         </li>
         <!-- .nav-item -->
       {% endfor %}
+
+      <!-- projects dropdown -->
+      {% if site.projects and site.projects.size > 0 %}
+        <li class="nav-item{% if page.url contains '/projects/' %}{{ " active" }}{% endif %}">
+          <input class="projects-toggle" type="checkbox" id="projects-toggle" {% if page.url contains '/projects/' %}checked{% endif %}>
+          <label for="projects-toggle" class="nav-link projects-toggle-label">
+            <i class="fa-fw fas fa-folder-open"></i>
+            <span class="tab-text" data-en="{{ site.data.locales.en.tabs.projects | upcase }}" data-fa="{{ site.data.locales.fa.tabs.projects | upcase }}">{{ site.data.locales[current_lang].tabs.projects | upcase }}</span>
+            <i class="fas fa-chevron-down chevron-icon"></i>
+          </label>
+          <ul class="projects-list">
+            {% for project in site.projects %}
+              <li class="project-item">
+                <input class="project-submenu-toggle" type="checkbox" id="project-{{ project.name }}" {% if page.url contains project.url %}checked{% endif %}>
+                <label for="project-{{ project.name }}" class="project-name nav-link">
+                  <i class="fas fa-chevron-right project-chevron"></i>
+                  <span class="project-title">{{ project.title }}</span>
+                </label>
+                {% if project.nav_items and project.nav_items.size > 0 %}
+                  <ul class="project-pages">
+                    {% for nav_item in project.nav_items %}
+                      <li class="{% if page.url == nav_item.url %}active{% endif %}">
+                        <a href="{{ nav_item.url | relative_url }}">{{ nav_item.title }}</a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endif %}
     </ul>
   </nav>
 

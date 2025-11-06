@@ -13,32 +13,43 @@ Alijanloo.github.io/
 │   ├── contact.yml          # Social media links in sidebar
 │   ├── share.yml            # Social sharing options
 │   └── locales/             # Language translations
-│       ├── en.yml           # English UI translations
-│       └── fa.yml           # Persian UI translations
+│       ├── en.yml           # English UI translations (includes 'Projects' tab)
+│       └── fa.yml           # Persian UI translations (includes 'پروژه‌ها' tab)
 ├── _posts/                  # Your blog posts go here
 ├── _tabs/                   # Static pages accessible from sidebar
 │   ├── about.md             # About page (customize with your bio)
 │   ├── archives.md          # Archive page (auto-generated)
 │   ├── categories.md        # Categories page (auto-generated)
 │   └── tags.md              # Tags page (auto-generated)
+├── _projects/               # ✨ NEW: Project documentation sites
+│   └── Retail-Shelf-Monitoring/  # Example project folder
+│       ├── index.html       # Project main page (with md-nav__list)
+│       ├── technical_report/
+│       ├── project_tree/
+│       └── ...              # Other project pages
 ├── _layouts/                # Custom layout overrides
 │   ├── home.html            # Homepage with language filtering
 │   ├── archives.html        # Archives with language filtering
 │   ├── categories.html      # Categories with language filtering
-│   └── tags.html            # Tags with language filtering
+│   ├── tags.html            # Tags with language filtering
+│   └── project.html         # ✨ NEW: Layout for project documentation pages
 ├── _includes/               # Custom include files
-│   ├── sidebar.html         # Sidebar with language toggle
+│   ├── sidebar.html         # Sidebar with language toggle + Projects dropdown
 │   ├── page-lang.html       # Page language detection
 │   └── metadata-hook.html   # Custom scripts and styles
 ├── _plugins/                # Jekyll plugins
 │   ├── posts-lastmod-hook.rb       # Post modification tracking
 │   ├── language-handler.rb         # Bilingual post handler
-│   └── language-filter.rb          # Language content filtering
+│   ├── language-filter.rb          # Language content filtering
+│   ├── projects-generator.rb       # ✨ NEW: Scans _projects and extracts navigation
+│   ├── projects-pages-generator.rb # ✨ NEW: Converts project HTML to Jekyll pages
+│   └── projects-copy-hook.rb       # ✨ NEW: Copies non-HTML assets from _projects
 ├── assets/
 │   ├── img/
 │   │   └── favicons/        # Website favicon images
 │   ├── css/
-│   │   └── lang-toggle.css  # Language toggle & RTL styles
+│   │   ├── lang-toggle.css  # Language toggle & RTL styles
+│   │   └── projects-sidebar.css  # ✨ NEW: Projects dropdown styles
 │   ├── js/
 │   │   └── lang-toggle.js   # Language switching logic
 │   └── lib/                 # External libraries
@@ -46,7 +57,7 @@ Alijanloo.github.io/
 │   ├── run.sh               # Local development server script
 │   └── test.sh              # Build for production script
 ├── index.html               # Homepage layout
-├── Gemfile                  # Ruby dependencies
+├── Gemfile                  # Ruby dependencies (includes nokogiri)
 ├── README.md                # Project documentation
 ├── MULTILINGUAL_GUIDE.md    # Guide for creating bilingual posts
 └── LANGUAGE_TOGGLE_SUMMARY.md  # Language feature summary

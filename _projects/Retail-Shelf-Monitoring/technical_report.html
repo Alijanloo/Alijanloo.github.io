@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>technical_report</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="retail-shelf-monitoring-system---technical-report">Retail Shelf
+Monitoring System - Technical Report</h1>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This technical report presents the comprehensive implementation of a
+real-time retail shelf monitoring system utilizing computer vision and
+machine learning technologies. The system leverages existing CCTV
+infrastructure to automatically detect out-of-stock (OOS) situations and
+product misplacements through advanced video analysis techniques.</p>
+<h2 id="system-overview">1. System Overview</h2>
+<h3 id="project-objective">1.1 Project Objective</h3>
+<p>The system aims to monitor retail shelves using existing CCTV
+cameras, providing real-time analysis and alerts for: - Out-of-stock
+(OOS) detection - Product misplacement identification</p>
+<h3 id="core-architecture">1.2 Core Architecture</h3>
+<p>The system follows Clean Architecture principles with clear
+separation of concerns: - <strong>Entities</strong>: Core business
+objects (SKU, Planogram, Detection, Alert) - <strong>Use Cases</strong>:
+Business logic implementation - <strong>Adaptors</strong>: External
+service interfaces (ML models, databases, tracking) -
+<strong>Frameworks</strong>: Infrastructure and UI components</p>
+<h2 id="technical-implementation">2. Technical Implementation</h2>
+<h3 id="machine-learning-pipeline">2.1 Machine Learning Pipeline</h3>
+<h4 id="object-detection">2.1.1 Object Detection</h4>
+<ul>
+<li><strong>Model</strong>: YOLOv12-Medium fine-tuned on SKU-110k
+dataset</li>
+<li><strong>Performance</strong>: mAP50-95 of 0.56</li>
+<li><strong>Optimization</strong>: ONNX export for OpenVINO (CPU) and
+TensorRT (GPU) inference</li>
+<li><strong>Speed Improvement</strong>: Up to 3x faster inference
+through hardware acceleration</li>
+</ul>
+<h4 id="sku-identification">2.1.2 SKU Identification</h4>
+<ul>
+<li><strong>Feature Extraction</strong>: MobileNetV3-based embedding
+model</li>
+<li><strong>Similarity Search</strong>: FAISS vector database for
+nearest neighbor retrieval</li>
+<li><strong>Accuracy</strong>: 93% SKU identification accuracy
+Top-1</li>
+<li><strong>Reference Dataset</strong>: Based on <a
+href="https://github.com/rokopi-byte/shelf_management">shelf_management</a>
+repository</li>
+</ul>
+<h3 id="video-processing-pipeline">2.2 Video Processing Pipeline</h3>
+<h4 id="frame-processing-strategy">2.2.1 Frame Processing Strategy</h4>
+<pre><code>Input Video → Keyframe Detection → Object Detection → SKU Identification → Grid Analysis → Alert Generation</code></pre>
+<p><strong>Keyframe Selection</strong>: - Intensity-based change
+detection to identify significant frames - Reduces computational load by
+processing only meaningful frames - Non-keyframes utilize tracking
+algorithms (SORT) for continuity</p>
+<h4 id="shelf-alignment-and-localization">2.2.2 Shelf Alignment and
+Localization</h4>
+<ul>
+<li><strong>Feature Matching</strong>: ORB/SIFT descriptors for robust
+feature extraction</li>
+<li><strong>Geometric Estimation</strong>: RANSAC-based homography
+estimation</li>
+<li><strong>Reference Matching</strong>: Template matching against
+stored shelf references</li>
+<li><strong>Coordinate Transformation</strong>: Warping detected frames
+to reference coordinate system</li>
+</ul>
+<h3 id="grid-detection-and-planogram-generation">2.3 Grid Detection and
+Planogram Generation</h3>
+<h4 id="automated-grid-creation">2.3.1 Automated Grid Creation</h4>
+<p><strong>Indexing Phase</strong> (One-time setup per shelf): 1.
+Capture reference shelf images with correct product placements 2. Run
+YOLOv12 detection on reference images 3. Apply clustering algorithm
+(DBSCAN) for row identification: - Cluster bounding boxes by
+Y-coordinate - Sort rows top-to-bottom by average Y-coordinate - Order
+items within rows left-to-right by X-coordinate 4. Generate grid matrix
+structure:
+<code>{shelf_id, rows: [{row_idx, items: [{item_idx, bbox, sku_id}]}]}</code>
+5. Store planogram in PostgreSQL database</p>
+<h4 id="real-time-grid-matching">2.3.2 Real-time Grid Matching</h4>
+<p><strong>Runtime Processing</strong>: 1. Apply same clustering
+algorithm to current frame detections 2. Match current grid structure to
+reference planogram 3. Compare detected SKUs with expected SKUs per cell
+position 4. Generate cell states: <code>OK</code>, <code>OOS</code>,
+<code>MISPLACED</code>, <code>UNKNOWN</code></p>
+<h3 id="performance-optimizations">2.4 Performance Optimizations</h3>
+<h4 id="inference-acceleration">2.4.1 Inference Acceleration</h4>
+<ul>
+<li><strong>ONNX Export</strong>: Model serialization for cross-platform
+compatibility</li>
+<li><strong>OpenVINO</strong>: Intel CPU optimization</li>
+<li><strong>TensorRT</strong>: NVIDIA GPU acceleration for real-time
+processing</li>
+<li><strong>PyTorch-TensorRT</strong>: Hybrid optimization
+framework</li>
+</ul>
+<h4 id="multi-threading-architecture">2.4.2 Multi-threading
+Architecture</h4>
+<pre><code>Main Thread
+├── Capture Thread (Video Input)
+├── Inference Thread (Shelf Aligner, SKU Detection/Recognition, Tracker)
+├── Alert Analysis Thread (Generate Grid, Analyse compliance, Generate Alerts into Redis)
+└── Alert Thread (Reads Alerts from Redis and updated Notification System)</code></pre>
+<p><strong>Threading Benefits</strong>: - Decoupled detection from grid
+analysis and alert generation - Faster video rendering with real-time
+overlay updates - Improved system responsiveness and throughput</p>
+<h4 id="tracking-integration">2.4.3 Tracking Integration</h4>
+<ul>
+<li><strong>SORT Algorithm</strong>: Simple Online and Realtime
+Tracking</li>
+<li><strong>Kalman Filter</strong>: State prediction for object
+continuity</li>
+<li><strong>IoU Matching</strong>: Hungarian algorithm for
+detection-track association</li>
+<li><strong>Temporal Consistency</strong>: Reduces false positives
+through frame-to-frame tracking</li>
+</ul>
+<h3 id="temporal-consensus-and-alert-logic">2.5 Temporal Consensus and
+Alert Logic</h3>
+<h4 id="state-management">2.5.1 State Management</h4>
+<ul>
+<li><strong>Cell State Tracking</strong>: Maintain status per planogram
+cell position</li>
+<li><strong>Temporal Filtering</strong>: Require 3+ consecutive
+detections before alert generation</li>
+<li><strong>False Positive Reduction</strong>: Prevent alerts from
+temporary occlusions or motion blur</li>
+</ul>
+<h2 id="system-components">3. System Components</h2>
+<h3 id="desktop-application-pyside6">3.1 Desktop Application
+(PySide6)</h3>
+<ul>
+<li><strong>Real-time Video Display</strong>: Live stream with detection
+overlays</li>
+<li><strong>Interactive Alert Panel</strong>: Staff
+confirmation/dismissal interface</li>
+<li><strong>Planogram Visualization</strong>: Grid overlay with cell
+status indicators</li>
+</ul>
+<h2 id="technical-challenges-and-solutions">4. Technical Challenges and
+Solutions</h2>
+<h3 id="performance-optimization">4.1 Performance Optimization</h3>
+<p><strong>Challenge</strong>: Real-time processing requirements with
+limited computational resources</p>
+<p><strong>Solutions</strong>: - Hardware-accelerated inference
+(OpenVINO, TensorRT) - Keyframe-based processing to reduce computational
+load - Multi-threaded architecture for parallel processing - Efficient
+tracking algorithms (SORT) for non-detection frames</p>
+<h2 id="conclusion">5. Conclusion</h2>
+<p>The Retail Shelf Monitoring System successfully demonstrates the
+integration of modern computer vision and machine learning technologies
+for practical retail automation. The system achieves real-time
+performance through strategic optimization techniques while maintaining
+high accuracy through robust algorithmic approaches.</p>
+</body>
+</html>

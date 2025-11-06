@@ -1,6 +1,5 @@
 ---
 title: "صد سال تنهایی: گابریل گارسیا مارکز"
-subtitle: "One Hundred Years of Solitude: Gabriel García Márquez"
 date: 2025-10-23 12:00:00 +0330
 author: ali_janloo
 categories:
@@ -12,7 +11,7 @@ tags:
   - Magical Realism
   - Colombia
   - Classic
-cover: /assets/100.jpg
+cover: /assets/Gabriel-García.jpg
 pin: false
 ---
 

@@ -1,9 +1,10 @@
 ---
-title: "کیمیاگر"
+title: "کیمیاگر: پائولو کوئیلو"
 date: 2025-10-23 12:00:00 +0330
 categories: [Literature]
 tags: [Books, Novel, Psychology]
 author: ali_janloo
+cover: /assets/Paulo-Coelho.jpg
 pin: false
 ---
 

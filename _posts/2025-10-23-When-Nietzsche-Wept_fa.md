@@ -4,6 +4,7 @@ date: 2025-10-23 12:00:00 +0330
 categories: [Literature]
 tags: [Books, Philosophy, Psychology]
 author: ali_janloo
+cover: /assets/Irvin-D-Yalom.jpg
 pin: false
 ---
 

@@ -4,6 +4,7 @@ date: 2025-10-23 12:00:00 +0330
 categories: [Literature]
 tags: [Philosophy, Politics, Italy, Political Thought, History, Writer, Philosopher]
 author: ali_janloo
+cover: /assets/Machiavelli.jpg
 pin: false
 ---
 

@@ -213,8 +213,9 @@ html[lang="fa"] #post-wrapper h1 {
 .post-cover-full img {
   width: 100%;
   height: auto;
+  max-height: 500px;  
   display: block;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* RTL/LTR positioning for preview cards */

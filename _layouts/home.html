@@ -44,16 +44,20 @@ refactor: true
   {% for post in posts %}
     {% assign post_lang = post.lang | default: 'en' %}
     <article class="card-wrapper card" data-lang="{{ post_lang }}">
-      <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
+      {% if post_lang == 'fa' %}
+        <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row">
+      {% else %}
+        <a href="{{ post.url | relative_url }}" class="post-preview row g-0 flex-md-row-reverse">
+      {% endif %}
         {% assign card_body_col = '12' %}
 
-        {% if post.image %}
-          {% assign src = post.image.path | default: post.image %}
-          {% unless src contains '//' %}
-            {% assign src = post.img_path | append: '/' | append: src | replace: '//', '/' %}
+        {% assign cover_src = post.cover | default: post.image.path | default: post.image %}
+        {% if cover_src %}
+          {% unless cover_src contains '//' %}
+            {% assign cover_src = post.img_path | append: '/' | append: cover_src | replace: '//', '/' %}
           {% endunless %}
 
-          {% assign alt = post.image.alt | xml_escape | default: 'Preview Image' %}
+          {% assign alt = post.image.alt | xml_escape | default: 'Cover Image' %}
 
           {% assign lqip = null %}
 
@@ -62,7 +66,7 @@ refactor: true
           {% endif %}
 
           <div class="col-md-5">
-            <img src="{{ src }}" alt="{{ alt }}" {{ lqip }}>
+            <img src="{{ cover_src }}" alt="{{ alt }}" {{ lqip }} class="post-cover-img">
           </div>
 
           {% assign card_body_col = '7' %}

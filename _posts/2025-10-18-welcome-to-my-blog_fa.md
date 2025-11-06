@@ -4,7 +4,7 @@ date: 2025-10-18 12:00:00 +0330
 categories: [عمومی, معرفی]
 tags: [وبلاگ]
 author: ali_janloo
-pin: true
+pin: false
 lang: fa
 ---
 

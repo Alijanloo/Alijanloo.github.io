@@ -163,6 +163,15 @@
    * Initialize language on page load
    */
   function initLanguage() {
+    // Ensure languagePagination exists
+    if (!window.languagePagination) {
+      window.languagePagination = {
+        postsPerPage: 10,
+        currentPage: 1,
+        currentLang: 'en'
+      };
+    }
+
     // Check if we're on a Persian post (URL ends with _fa)
     const currentPath = window.location.pathname;
     const isFaPost = currentPath.match(/\/posts\/[^\/]+_fa\/?$/);
@@ -326,7 +335,7 @@
     
     a.addEventListener('click', function(e) {
       e.preventDefault();
-      goToPage(page, lang);
+      window.goToPage(page, lang);
     });
     
     li.appendChild(a);
@@ -337,9 +346,15 @@
    * Go to specific page
    */
   window.goToPage = function(page, lang) {
-    if (window.languagePagination) {
-      window.languagePagination.currentPage = page;
+    if (!window.languagePagination) {
+      window.languagePagination = {
+        postsPerPage: 10,
+        currentPage: 1,
+        currentLang: lang
+      };
     }
+    
+    window.languagePagination.currentPage = page;
     
     // Re-filter content with new page
     filterContentByLanguage(lang);

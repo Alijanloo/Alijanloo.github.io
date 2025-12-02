@@ -194,8 +194,11 @@
   function filterContentByLanguage(lang) {
     // Update current language for pagination
     if (window.languagePagination) {
-      window.languagePagination.currentLang = lang;
-      window.languagePagination.currentPage = 1; // Reset to first page when switching language
+      // Only reset page if language changed
+      if (window.languagePagination.currentLang !== lang) {
+        window.languagePagination.currentLang = lang;
+        window.languagePagination.currentPage = 1; // Reset to first page when switching language
+      }
     }
     
     // Filter and paginate post list items (home page)

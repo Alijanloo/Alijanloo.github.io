@@ -3,13 +3,11 @@ layout: null
 sitemap: false
 ---
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 {% for post in site.posts %}
   <url>
     <loc>{{ site.url }}{{ post.url }}</loc>
     <lastmod>{{ post.date | date_to_xmlschema }}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
 {% endfor %}
 {% for page in site.pages %}
@@ -20,8 +18,6 @@ sitemap: false
   <url>
     <loc>{{ site.url }}{{ page.url }}</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
   </url>
       {% endunless %}
     {% endunless %}
@@ -31,16 +27,12 @@ sitemap: false
   <url>
     <loc>{{ site.url }}/categories/{{ category[0] | slugify }}/</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.4</priority>
   </url>
 {% endfor %}
 {% for tag in site.tags %}
   <url>
     <loc>{{ site.url }}/tags/{{ tag[0] | slugify }}/</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.4</priority>
   </url>
 {% endfor %}
 </urlset>

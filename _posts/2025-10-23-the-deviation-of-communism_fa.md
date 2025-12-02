@@ -3,7 +3,7 @@ title: "به انحراف کشیده شدن کمونیسم"
 date: 2025-10-23 12:00:00 +0330
 author: ali_janloo
 categories:
-  - Literature
+  - History
 tags:
   - History
   - Politics

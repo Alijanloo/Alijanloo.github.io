@@ -1,7 +1,7 @@
 ---
 title: "نیکولو برناردو ماکیاولی"
 date: 2025-10-23 12:00:00 +0330
-categories: [Literature]
+categories: [Politics]
 tags: [Philosophy, Politics, Italy, Political Thought, History, Writer, Philosopher]
 author: ali_janloo
 cover: /assets/Machiavelli.jpg

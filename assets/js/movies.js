@@ -49,22 +49,6 @@ function formatUpdatedAt(dateStr) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
 }
 
-/* ---------------- auth status ---------------- */
-
-async function checkAuth() {
-  const statusEl = el("authStatus");
-  try {
-    const res = await fetch(`${API_BASE}/api/movies`, { credentials: "include" });
-    if (res.ok) {
-      statusEl.textContent = "signed in";
-      statusEl.classList.add("is-in");
-      return true;
-    }
-  } catch (_) {}
-  statusEl.textContent = "not signed in";
-  statusEl.classList.remove("is-in");
-  return false;
-}
 
 /* ---------------- data loading ---------------- */
 
@@ -558,5 +542,4 @@ document.addEventListener("keydown", (e) => {
 
 /* ---------------- init ---------------- */
 
-checkAuth();
 loadMovies();

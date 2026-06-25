@@ -21,7 +21,7 @@ function escapeHtml(str) {
 }
 
 function statusLabel(status) {
-  return { not_seen: "Not seen", watching: "Watching", watched: "Watched" }[status] || "Not seen";
+  return { not_seen: "Not seen", watched: "Watched" }[status] || "Not seen";
 }
 
 function formatRuntime(seconds) {
@@ -247,8 +247,6 @@ function cardTemplate(m) {
   const genres = (t?.genres || []).slice(0, 3);
   const plot = t?.plot;
   const poster = t?.primaryImage?.url;
-  const comment = m.comment;
-  const updatedAt = formatUpdatedAt(m.updated_at);
 
   return `
     <li class="movie-card" data-id="${escapeHtml(m.id)}">
@@ -274,7 +272,6 @@ function cardTemplate(m) {
       <div class="card-body">
         <div class="card-title-row">
           <h3 class="card-title">${title}</h3>
-          ${updatedAt ? `<span class="updated-badge" title="${escapeHtml(m.updated_at)}">${escapeHtml(updatedAt)}</span>` : ""}
         </div>
         <div class="card-meta">
           ${year ? `<span>${year}${endYear ? `&ndash;${endYear}` : ""}</span>` : `<span>${escapeHtml(m.imdbId)}</span>`}
@@ -282,9 +279,8 @@ function cardTemplate(m) {
         </div>
         ${genres.length ? `<div class="genre-tags">${genres.map((g) => `<span class="genre-tag">${escapeHtml(g)}</span>`).join("")}</div>` : ""}
         ${plot ? `<p class="card-plot">${escapeHtml(plot)}</p>` : ""}
-        ${comment ? `<p class="card-comment">&ldquo;${escapeHtml(comment)}&rdquo;</p>` : ""}
         <div class="card-actions">
-          <button type="button" class="btn-edit" data-id="${escapeHtml(m.id)}">Edit</button>
+          <button type="button" class="btn-edit" data-id="${escapeHtml(m.id)}">Details</button>
         </div>
       </div>
     </li>`;
@@ -345,19 +341,154 @@ el("movieList").addEventListener("click", (e) => {
   openEditModal(btn.dataset.id);
 });
 
+function personTemplate(person) {
+  const name = escapeHtml(person.displayName || "Unknown");
+  const img = person.primaryImage?.url;
+  const profs = (person.primaryProfessions || []).join(", ");
+  const initials = (person.displayName || "?").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  return `
+    <div class="modal-person">
+      <div class="modal-person-avatar">
+        ${img ? `<img src="${escapeHtml(img)}" alt="${name}" loading="lazy" />` : `<div class="modal-person-avatar-fallback">${escapeHtml(initials)}</div>`}
+      </div>
+      <div>
+        <div class="modal-person-name">${name}</div>
+        ${profs ? `<div class="modal-person-prof">${escapeHtml(profs)}</div>` : ""}
+      </div>
+    </div>`;
+}
+
+function peopleGroupTemplate(label, people) {
+  if (!people || people.length === 0) return "";
+  return `
+    <div class="modal-people-group">
+      <h4>${escapeHtml(label)}</h4>
+      ${people.slice(0, 4).map(personTemplate).join("")}
+    </div>`;
+}
+
 function openEditModal(id) {
   const movie = rawMovies.find((m) => String(m.id) === String(id));
   if (!movie) return;
   activeEditId = movie.id;
 
-  const t = movie.imdb;
-  el("modalTitle").textContent = t?.primaryTitle || movie.imdbId;
-  el("modalSub").textContent = t?.startYear ? `${t.startYear} &middot; ${movie.imdbId}`.replace("&middot;", "·") : movie.imdbId;
+  const t = movie.imdb || {};
+
+  /* --- Header --- */
+  el("modalTitle").textContent = t.primaryTitle || movie.imdbId;
+
+  // Type badge
+  const typeBadge = el("modalTypeBadge");
+  if (t.type) {
+    typeBadge.textContent = t.type.replace(/([A-Z])/g, " $1").trim();
+    typeBadge.style.display = "inline-block";
+  } else {
+    typeBadge.style.display = "none";
+  }
+
+  // Poster
+  const posterUrl = t.primaryImage?.url;
+  el("modalPoster").innerHTML = posterUrl
+    ? `<img src="${escapeHtml(posterUrl)}" alt="${escapeHtml(t.primaryTitle || "")} poster" />`
+    : `<div class="modal-poster-fallback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 16l5-5 4 4 5-5 4 4"/></svg></div>`;
+
+  // Meta line: year · runtime · IMDb ID
+  const metaParts = [];
+  const yearStr = t.startYear ? String(t.startYear) + (t.endYear && t.endYear !== t.startYear ? `–${t.endYear}` : "") : "";
+  if (yearStr) metaParts.push(`<span>${escapeHtml(yearStr)}</span>`);
+  const runtime = formatRuntime(t.runtimeSeconds);
+  if (runtime) metaParts.push(`<span class="dot">·</span><span>${escapeHtml(runtime)}</span>`);
+  metaParts.push(`<span class="dot">·</span><span>${escapeHtml(movie.imdbId)}</span>`);
+  el("modalMetaLine").innerHTML = metaParts.join("");
+
+  // Rating row
+  const rating = t.rating?.aggregateRating;
+  const voteCount = t.rating?.voteCount;
+  el("modalRatingRow").innerHTML = rating
+    ? `<svg class="stars-icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+       <span class="rating-num">${rating.toFixed(1)}</span>
+       ${voteCount ? `<span class="vote-count">(${voteCount.toLocaleString()} votes)</span>` : ""}`
+    : "";
+
+  // Genres
+  const genres = t.genres || [];
+  el("modalGenres").innerHTML = genres
+    .map((g) => `<span class="genre-tag">${escapeHtml(g)}</span>`)
+    .join("");
+
+  /* --- Body --- */
+  const bodyParts = [];
+
+  // Plot
+  if (t.plot) {
+    bodyParts.push(`
+      <div>
+        <p class="modal-section-label">Plot</p>
+        <p class="modal-plot">${escapeHtml(t.plot)}</p>
+      </div>`);
+  }
+
+  // People: directors, writers, stars
+  const peopleGrid = [
+    peopleGroupTemplate("Directors", t.directors),
+    peopleGroupTemplate("Writers", t.writers),
+    peopleGroupTemplate("Stars", t.stars),
+  ].filter(Boolean).join("");
+
+  if (peopleGrid) {
+    bodyParts.push(`
+      <div>
+        <p class="modal-section-label">Cast & Crew</p>
+        <div class="modal-people-grid">${peopleGrid}</div>
+      </div>`);
+  }
+
+  // Details grid: countries, languages, type
+  const details = [];
+  const countries = (t.originCountries || []).map((c) => c.name).join(", ");
+  if (countries) details.push({ label: "Country", value: countries });
+  const languages = (t.spokenLanguages || []).map((l) => l.name).join(", ");
+  if (languages) details.push({ label: "Language", value: languages });
+  if (t.startYear) details.push({ label: "Year", value: t.endYear && t.endYear !== t.startYear ? `${t.startYear}–${t.endYear}` : String(t.startYear) });
+  if (runtime) details.push({ label: "Runtime", value: runtime });
+  if (t.type) details.push({ label: "Type", value: t.type.replace(/([A-Z])/g, " $1").trim() });
+
+  if (details.length) {
+    bodyParts.push(`
+      <div>
+        <p class="modal-section-label">Details</p>
+        <div class="modal-details-grid">
+          ${details.map((d) => `<div class="modal-detail-item"><span class="modal-detail-label">${escapeHtml(d.label)}</span><span class="modal-detail-value">${escapeHtml(d.value)}</span></div>`).join("")}
+        </div>
+      </div>`);
+  }
+
+  // Interests
+  const interests = t.interests || [];
+  if (interests.length) {
+    bodyParts.push(`
+      <div>
+        <p class="modal-section-label">Interests</p>
+        <div class="modal-interests">
+          ${interests.map((i) => `<span class="modal-interest-tag${i.isSubgenre ? " subgenre" : ""}">${escapeHtml(i.name)}</span>`).join("")}
+        </div>
+      </div>`);
+  }
+
+  el("modalBody").innerHTML = bodyParts.join("");
+
+  /* --- Edit section --- */
   el("commentInput").value = movie.comment || "";
 
   document.querySelectorAll(".status-option").forEach((opt) => {
     opt.classList.toggle("active", opt.dataset.status === (movie.status || "not_seen"));
   });
+
+  // Updated at
+  const updatedAt = formatUpdatedAt(movie.updated_at);
+  el("modalUpdated").innerHTML = updatedAt
+    ? `Last updated <strong>${escapeHtml(updatedAt)}</strong>`
+    : "";
 
   el("modalOverlay").classList.add("is-open");
 }
@@ -375,6 +506,7 @@ el("statusOptions").addEventListener("click", (e) => {
 });
 
 el("modalCancel").addEventListener("click", closeEditModal);
+el("modalCloseBtn").addEventListener("click", closeEditModal);
 el("modalOverlay").addEventListener("click", (e) => {
   if (e.target === el("modalOverlay")) closeEditModal();
 });

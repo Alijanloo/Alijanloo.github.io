@@ -312,7 +312,6 @@
   filter:brightness(0.6);
 }
 .status-flag[data-status="not_seen"]{ background:var(--grey-flag); }
-.status-flag[data-status="watching"]{ background:var(--rust); color:#241308;}
 .status-flag[data-status="watched"]{ background:var(--sage); }
 
 .rating-pill{
@@ -480,17 +479,18 @@
 .empty-state p{ font-size:13.5px; margin:0; max-width:340px; margin:0 auto; line-height:1.6; }
 .empty-state a{ color:var(--gold); text-decoration:none; font-weight:600; }
 
-/* ===== Modal (edit status/comment) ===== */
+/* ===== Modal (rich details + edit) ===== */
 .modal-overlay{
   position:fixed; inset:0;
-  background:rgba(10,9,6,0.7);
-  backdrop-filter:blur(3px);
-  display:flex; align-items:center; justify-content:center;
+  background:rgba(10,9,6,0.75);
+  backdrop-filter:blur(4px);
+  display:flex; align-items:flex-start; justify-content:center;
   z-index:100;
-  padding:20px;
+  padding:24px;
   opacity:0;
   pointer-events:none;
   transition:opacity .18s;
+  overflow-y:auto;
 }
 .modal-overlay.is-open{ opacity:1; pointer-events:auto; }
 .movie-edit-modal{
@@ -498,28 +498,201 @@
   border:1px solid var(--line);
   border-radius:14px;
   width:100%;
-  max-width:420px;
-  padding:26px;
+  max-width:680px;
+  padding:0;
   box-shadow:0 30px 60px -15px rgba(0,0,0,0.6);
-  transform:translateY(8px) scale(0.98);
+  transform:translateY(12px) scale(0.97);
   transition:transform .18s;
+  position:relative;
+  overflow:hidden;
 }
 .modal-overlay.is-open .movie-edit-modal{ transform:translateY(0) scale(1); }
-.movie-edit-modal h2{
+
+.modal-close{
+  position:absolute;
+  top:12px; right:12px;
+  z-index:2;
+  width:32px; height:32px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:rgba(15,14,9,0.7);
+  color:var(--paper-dim);
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .15s;
+  backdrop-filter:blur(4px);
+}
+.modal-close:hover{ border-color:var(--rust); color:var(--rust); }
+
+/* --- Header section: poster + title --- */
+.modal-header{
+  display:flex;
+  gap:18px;
+  padding:22px 22px 18px;
+  border-bottom:1px solid var(--line);
+}
+.modal-poster{
+  flex:none;
+  width:120px;
+  aspect-ratio:2/3;
+  border-radius:8px;
+  overflow:hidden;
+  background:linear-gradient(160deg, var(--surface), #161409);
+  box-shadow:0 8px 20px -8px rgba(0,0,0,0.6);
+}
+.modal-poster img{ width:100%; height:100%; object-fit:cover; display:block; }
+.modal-poster-fallback{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--muted);
+}
+.modal-poster-fallback svg{ width:30px; height:30px; opacity:0.4; }
+.modal-header-info{ flex:1; min-width:0; padding-top:4px; }
+.modal-header-info h2{
   font-family:'Bebas Neue',sans-serif;
-  font-size:26px;
+  font-size:28px;
   font-weight:400;
   letter-spacing:0.02em;
-  margin:0 0 4px;
+  line-height:1.05;
+  margin:0 0 6px;
   color:var(--paper);
 }
-.movie-edit-modal .modal-sub{
+.modal-type-badge{
+  display:inline-block;
   font-family:'JetBrains Mono',monospace;
-  font-size:11px;
-  color:var(--muted);
-  margin:0 0 20px;
+  font-size:9px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+  border:1px solid var(--gold-dim);
+  padding:2px 7px;
+  border-radius:999px;
+  margin-bottom:8px;
 }
-.movie-edit-modal label{
+.modal-meta-line{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11.5px;
+  color:var(--paper-dim);
+  display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.modal-meta-line .dot{ color:var(--line); }
+.modal-rating-row{
+  display:flex; align-items:center; gap:8px;
+  margin-top:6px;
+}
+.modal-rating-row .stars-icon{ width:14px; height:14px; fill:var(--gold); }
+.modal-rating-row .rating-num{ font-family:'JetBrains Mono',monospace; font-size:14px; font-weight:600; color:var(--gold); }
+.modal-rating-row .vote-count{ font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--muted); }
+.modal-genres{ display:flex; gap:5px; flex-wrap:wrap; margin-top:8px; }
+
+/* --- Body section: plot, cast, details --- */
+.modal-body{
+  padding:18px 22px;
+  display:flex; flex-direction:column; gap:16px;
+}
+.modal-section-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+  margin:0 0 6px;
+}
+.modal-plot{
+  font-size:13px;
+  color:var(--paper-dim);
+  line-height:1.6;
+  margin:0;
+}
+.modal-people-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+.modal-people-group h4{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+  margin:0 0 8px;
+}
+.modal-person{
+  display:flex; align-items:center; gap:8px;
+  margin-bottom:6px;
+}
+.modal-person:last-child{ margin-bottom:0; }
+.modal-person-avatar{
+  flex:none;
+  width:32px; height:32px;
+  border-radius:50%;
+  overflow:hidden;
+  background:var(--surface);
+  border:1px solid var(--line);
+}
+.modal-person-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.modal-person-avatar-fallback{
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; font-weight:700; color:var(--muted);
+}
+.modal-person-name{
+  font-size:12px;
+  color:var(--paper);
+  font-weight:500;
+  line-height:1.2;
+}
+.modal-person-prof{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  color:var(--muted);
+  text-transform:capitalize;
+}
+.modal-details-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px 18px;
+}
+.modal-detail-item{
+  display:flex; flex-direction:column; gap:2px;
+}
+.modal-detail-label{
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.modal-detail-value{
+  font-size:12px;
+  color:var(--paper-dim);
+  line-height:1.4;
+}
+.modal-interests{
+  display:flex; gap:5px; flex-wrap:wrap;
+}
+.modal-interest-tag{
+  font-size:9.5px;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:0.02em;
+  color:var(--paper-dim);
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  padding:3px 8px;
+  border-radius:999px;
+}
+.modal-interest-tag.subgenre{ color:var(--gold-dim); border-color:rgba(163,126,44,0.3); }
+
+/* --- Edit section --- */
+.modal-edit-section{
+  padding:18px 22px 22px;
+  border-top:1px solid var(--line);
+  background:rgba(0,0,0,0.12);
+}
+.modal-edit-section label{
   display:block;
   font-size:11.5px;
   font-family:'JetBrains Mono',monospace;
@@ -529,7 +702,7 @@
   margin-bottom:8px;
 }
 .status-options{
-  display:flex; gap:8px; margin-bottom:20px;
+  display:flex; gap:8px; margin-bottom:18px;
 }
 .status-option{
   flex:1;
@@ -545,9 +718,8 @@
   transition:all .15s;
 }
 .status-option[data-status="not_seen"].active{ background:var(--grey-flag-dim); border-color:var(--grey-flag); color:var(--paper); }
-.status-option[data-status="watching"].active{ background:var(--rust-dim); border-color:var(--rust); color:var(--paper); }
 .status-option[data-status="watched"].active{ background:var(--sage-dim); border-color:var(--sage); color:var(--paper); }
-.movie-edit-modal textarea{
+.modal-edit-section textarea{
   width:100%;
   background:var(--surface);
   border:1px solid var(--line);
@@ -557,12 +729,20 @@
   padding:12px;
   border-radius:8px;
   resize:vertical;
-  min-height:84px;
+  min-height:72px;
   outline:none;
-  margin-bottom:22px;
+  margin-bottom:12px;
   transition:border-color .15s;
+  box-sizing:border-box;
 }
-.movie-edit-modal textarea:focus{ border-color:var(--gold-dim); }
+.modal-edit-section textarea:focus{ border-color:var(--gold-dim); }
+.modal-updated{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10.5px;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+.modal-updated strong{ color:var(--paper-dim); }
 .modal-actions{ display:flex; gap:10px; justify-content:flex-end; }
 .modal-actions button{
   font-size:13px;
@@ -584,6 +764,13 @@
   .marquee{ padding:30px 18px 22px; }
   .toolbar{ flex-direction:column; align-items:stretch; }
   .filter-group{ justify-content:flex-start; }
+  .modal-header{ flex-direction:column; align-items:center; text-align:center; }
+  .modal-poster{ width:100px; }
+  .modal-people-grid{ grid-template-columns:1fr; }
+  .modal-details-grid{ grid-template-columns:1fr; }
+  .modal-meta-line{ justify-content:center; }
+  .modal-rating-row{ justify-content:center; }
+  .modal-genres{ justify-content:center; }
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -625,7 +812,6 @@
     <div class="filter-group" id="statusFilters">
       <button class="filter-chip active" data-filter="all">All</button>
       <button class="filter-chip" data-filter="not_seen">Not seen</button>
-      <button class="filter-chip" data-filter="watching">Watching</button>
       <button class="filter-chip" data-filter="watched">Watched</button>
     </div>
     <select class="sort-select" id="sortSelect">
@@ -645,19 +831,37 @@
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="movie-edit-modal">
-    <h2 id="modalTitle">Edit movie</h2>
-    <p class="modal-sub" id="modalSub"></p>
-    <label>Status</label>
-    <div class="status-options" id="statusOptions">
-      <button type="button" class="status-option" data-status="not_seen">Not seen</button>
-      <button type="button" class="status-option" data-status="watching">Watching</button>
-      <button type="button" class="status-option" data-status="watched">Watched</button>
+    <button type="button" class="modal-close" id="modalCloseBtn">&times;</button>
+
+    <!-- Header: poster + title/meta -->
+    <div class="modal-header">
+      <div class="modal-poster" id="modalPoster"></div>
+      <div class="modal-header-info">
+        <span class="modal-type-badge" id="modalTypeBadge"></span>
+        <h2 id="modalTitle"></h2>
+        <div class="modal-meta-line" id="modalMetaLine"></div>
+        <div class="modal-rating-row" id="modalRatingRow"></div>
+        <div class="modal-genres" id="modalGenres"></div>
+      </div>
     </div>
-    <label>Comment</label>
-    <textarea id="commentInput" placeholder="Your thoughts on this one&hellip;"></textarea>
-    <div class="modal-actions">
-      <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
-      <button type="button" class="btn-save" id="modalSave">Save changes</button>
+
+    <!-- Body: plot, cast, details -->
+    <div class="modal-body" id="modalBody"></div>
+
+    <!-- Edit section -->
+    <div class="modal-edit-section">
+      <label>Status</label>
+      <div class="status-options" id="statusOptions">
+        <button type="button" class="status-option" data-status="not_seen">Not seen</button>
+        <button type="button" class="status-option" data-status="watched">Watched</button>
+      </div>
+      <label>Comment</label>
+      <textarea id="commentInput" placeholder="Your thoughts on this one&hellip;"></textarea>
+      <p class="modal-updated" id="modalUpdated"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" id="modalCancel">Cancel</button>
+        <button type="button" class="btn-save" id="modalSave">Save changes</button>
+      </div>
     </div>
   </div>
 </div>

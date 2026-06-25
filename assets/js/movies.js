@@ -1,10 +1,7 @@
 const API_BASE = "https://rapid-lake-86f8.mahmoodjanlooali.workers.dev";
-const IMDB_API_BASE = "https://api.imdbapi.dev";
-const IMDB_BATCH_LIMIT = 5; // hard limit enforced by titles:batchGet
 
 // in-memory state
-let rawMovies = [];      // [{id, imdbId, status, comment, ...}] from our backend
-let imdbDataMap = {};    // imdbId -> title object from imdbapi.dev
+let rawMovies = [];      // [{id, imdbId, status, comment, imdb, ...}] from our backend
 let currentFilter = "all";
 let currentSearch = "";
 let currentSort = "added_desc";
@@ -21,12 +18,6 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-}
-
-function chunk(arr, size) {
-  const out = [];
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
-  return out;
 }
 
 function statusLabel(status) {
@@ -95,35 +86,11 @@ async function loadMovies() {
   rawMovies = data.movies || [];
 
   if (rawMovies.length === 0) {
-    imdbDataMap = {};
     renderEmptyCollectionState();
     return;
   }
 
-  const ids = [...new Set(rawMovies.map((m) => m.imdbId).filter(Boolean))];
-  await fetchImdbBatch(ids);
   renderGrid();
-}
-
-async function fetchImdbBatch(imdbIds) {
-  const batches = chunk(imdbIds, IMDB_BATCH_LIMIT);
-  const results = await Promise.all(
-    batches.map(async (batch) => {
-      const params = batch.map((id) => `titleIds=${encodeURIComponent(id)}`).join("&");
-      try {
-        const res = await fetch(`${IMDB_API_BASE}/titles:batchGet?${params}`);
-        if (!res.ok) return [];
-        const json = await res.json();
-        return json.titles || [];
-      } catch (_) {
-        return [];
-      }
-    })
-  );
-  imdbDataMap = {};
-  for (const title of results.flat()) {
-    if (title && title.id) imdbDataMap[title.id] = title;
-  }
 }
 
 /* ---------------- add movie ---------------- */
@@ -204,10 +171,7 @@ el("sortSelect").addEventListener("change", (e) => {
 /* ---------------- rendering ---------------- */
 
 function getEnrichedMovies() {
-  return rawMovies.map((m) => ({
-    ...m,
-    imdb: imdbDataMap[m.imdbId] || null,
-  }));
+  return rawMovies;
 }
 
 function applyFiltersAndSort(movies) {
@@ -310,7 +274,7 @@ function cardTemplate(m) {
       <div class="card-body">
         <div class="card-title-row">
           <h3 class="card-title">${title}</h3>
-          ${updatedAt ? `<span class="updated-badge" title="${escapeHtml(m.updated_at)}">Updated ${escapeHtml(updatedAt)}</span>` : ""}
+          ${updatedAt ? `<span class="updated-badge" title="${escapeHtml(m.updated_at)}">${escapeHtml(updatedAt)}</span>` : ""}
         </div>
         <div class="card-meta">
           ${year ? `<span>${year}${endYear ? `&ndash;${endYear}` : ""}</span>` : `<span>${escapeHtml(m.imdbId)}</span>`}
@@ -386,7 +350,7 @@ function openEditModal(id) {
   if (!movie) return;
   activeEditId = movie.id;
 
-  const t = imdbDataMap[movie.imdbId];
+  const t = movie.imdb;
   el("modalTitle").textContent = t?.primaryTitle || movie.imdbId;
   el("modalSub").textContent = t?.startYear ? `${t.startYear} &middot; ${movie.imdbId}`.replace("&middot;", "·") : movie.imdbId;
   el("commentInput").value = movie.comment || "";

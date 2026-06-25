@@ -41,6 +41,22 @@ function formatRuntime(seconds) {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
+function formatUpdatedAt(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d)) return null;
+  const now = new Date();
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffDay < 7) return `${diffDay}d ago`;
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 /* ---------------- auth status ---------------- */
 
 async function checkAuth() {
@@ -268,6 +284,7 @@ function cardTemplate(m) {
   const plot = t?.plot;
   const poster = t?.primaryImage?.url;
   const comment = m.comment;
+  const updatedAt = formatUpdatedAt(m.updated_at);
 
   return `
     <li class="movie-card" data-id="${escapeHtml(m.id)}">
@@ -291,7 +308,10 @@ function cardTemplate(m) {
         }
       </div>
       <div class="card-body">
-        <h3 class="card-title">${title}</h3>
+        <div class="card-title-row">
+          <h3 class="card-title">${title}</h3>
+          ${updatedAt ? `<span class="updated-badge" title="${escapeHtml(m.updated_at)}">Updated ${escapeHtml(updatedAt)}</span>` : ""}
+        </div>
         <div class="card-meta">
           ${year ? `<span>${year}${endYear ? `&ndash;${endYear}` : ""}</span>` : `<span>${escapeHtml(m.imdbId)}</span>`}
           ${runtime ? `<span class="dot">&middot;</span><span>${runtime}</span>` : ""}
@@ -418,6 +438,7 @@ el("modalSave").addEventListener("click", async () => {
       if (movie) {
         movie.status = status;
         movie.comment = comment;
+        movie.updated_at = new Date().toISOString();
       }
       closeEditModal();
       renderGrid();

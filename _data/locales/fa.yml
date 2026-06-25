@@ -21,6 +21,7 @@ tabs:
   archives: آرشیو
   about: درباره من
   projects: پروژه‌ها
+  movies: فیلم‌ها
 
 # متن نمایش داده شده در نوار جستجو و نتایج جستجو
 search:
@@ -78,7 +79,7 @@ post:
       succeed: لینک با موفقیت کپی شد!
 
 # فرمت تاریخ و زمان
-# See: <http://strftime.net/>, <https://day.js.org/docs/en/display/format>
+# See: <http://strftime.net>, <https://day.js.org/docs/en/display/format>
 df:
   post:
     strftime: "%Y/%m/%d"

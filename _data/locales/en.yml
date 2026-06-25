@@ -21,6 +21,7 @@ tabs:
   archives: Archives
   about: About
   projects: Projects
+  movies: Movies
 
 # the text displayed in the search bar & search results
 search:
@@ -78,7 +79,7 @@ post:
       succeed: Link copied successfully!
 
 # Date time format.
-# See: <http://strftime.net/>, <https://day.js.org/docs/en/display/format>
+# See: <http://strftime.net>, <https://day.js.org/docs/en/display/format>
 df:
   post:
     strftime: "%b %e, %Y"

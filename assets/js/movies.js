@@ -2,7 +2,7 @@ const API_BASE = "https://rapid-lake-86f8.mahmoodjanlooali.workers.dev";
 
 // in-memory state
 let rawMovies = [];      // [{id, imdbId, status, comment, imdb, ...}] from our backend
-let currentFilter = "all";
+let currentFilter = "watched"; // "not_seen" | "watched"
 let currentSearch = "";
 let currentSort = "updated_desc";
 let activeEditId = null;
@@ -161,10 +161,7 @@ function getEnrichedMovies() {
 
 function applyFiltersAndSort(movies) {
   let result = movies;
-
-  if (currentFilter !== "all") {
-    result = result.filter((m) => (m.status || "not_seen") === currentFilter);
-  }
+  result = result.filter((m) => m.status === currentFilter);
 
   if (currentSearch) {
     result = result.filter((m) => {

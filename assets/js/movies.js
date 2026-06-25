@@ -4,7 +4,7 @@ const API_BASE = "https://rapid-lake-86f8.mahmoodjanlooali.workers.dev";
 let rawMovies = [];      // [{id, imdbId, status, comment, imdb, ...}] from our backend
 let currentFilter = "all";
 let currentSearch = "";
-let currentSort = "added_desc";
+let currentSort = "updated_desc";
 let activeEditId = null;
 
 const el = (id) => document.getElementById(id);
@@ -193,9 +193,11 @@ function applyFiltersAndSort(movies) {
           (b.imdb?.rating?.aggregateRating || 0) - (a.imdb?.rating?.aggregateRating || 0)
       );
       break;
-    case "added_desc":
+    case "updated_desc":
     default:
-      sorted.reverse();
+      sorted.reverse((a, b) =>
+        (a?.updated_at || "").localeCompare(b?.updated_at || "")
+      );
       break;
   }
   return sorted;

@@ -195,9 +195,7 @@ function applyFiltersAndSort(movies) {
       break;
     case "updated_desc":
     default:
-      sorted.reverse((a, b) =>
-        (a?.updated_at || "").localeCompare(b?.updated_at || "")
-      );
+      sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
       break;
   }
   return sorted;

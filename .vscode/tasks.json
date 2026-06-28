@@ -2,25 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Jekyll Server",
+      "label": "Dev Server",
       "type": "shell",
-      "command": "./tools/run.sh",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "command": "npm run dev",
+      "group": { "kind": "build", "isDefault": true },
       "problemMatcher": [],
-      "detail": "Runs the Jekyll server with live reload."
+      "detail": "Run the Vite dev server with hot reload."
     },
     {
-      "label": "Build Jekyll Site",
+      "label": "Build Site",
       "type": "shell",
-      "command": "./tools/test.sh",
-      "group": {
-        "kind": "build"
-      },
+      "command": "npm run build",
+      "group": { "kind": "build" },
       "problemMatcher": [],
-      "detail": "Build the Jekyll site for production."
+      "detail": "Build the production site to /dist."
     }
   ]
 }

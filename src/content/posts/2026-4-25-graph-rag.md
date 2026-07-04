@@ -44,7 +44,76 @@ This is done using a multipart LLM prompt that first identifies all entities in 
 
 The LLM can also be prompted to extract claims about detected entities. Claims are important factual statements about entities, such as dates, events, and interactions with other entities.
 
-![Prompt structure for extracting entities, relationships, and claims from a text chunk](assets/graph_rag/image-1.png)
+<details>
+<summary>Full entity/relationship extraction prompt (GraphRAG source)</summary>
+
+```text
+-Goal-
+Given a text document that is potentially relevant to this activity and a list of entity types, identify all entities of those types from the text and all relationships among the identified entities.
+
+-Steps-
+1. Identify all entities. For each identified entity, extract the following information:
+- entity_name: Name of the entity, capitalized
+- entity_type: One of the following types: [{entity_types}]
+- entity_description: Comprehensive description of the entity's attributes and activities
+Format each entity as ("entity"<|><entity_name><|><entity_type><|><entity_description>)
+
+2. From the entities identified in step 1, identify all pairs of (source_entity, target_entity) that are *clearly related* to each other.
+For each pair of related entities, extract the following information:
+- source_entity: name of the source entity, as identified in step 1
+- target_entity: name of the target entity, as identified in step 1
+- relationship_description: explanation as to why you think the source entity and the target entity are related to each other
+- relationship_strength: a numeric score indicating strength of the relationship between the source entity and target entity
+Format each relationship as ("relationship"<|><source_entity><|><target_entity><|><relationship_description><|><relationship_strength>)
+
+3. Return output in English as a single list of all the entities and relationships identified in steps 1 and 2. Use **##** as the list delimiter.
+
+4. When finished, output <|COMPLETE|>
+
+######################
+-Examples-
+######################
+Example 1:
+Entity_types: ORGANIZATION,PERSON
+Text:
+The Verdantis's Central Institution is scheduled to meet on Monday and Thursday, with the institution planning to release its latest policy decision on Thursday at 1:30 p.m. PDT, followed by a press conference where Central Institution Chair Martin Smith will take questions. Investors expect the Market Strategy Committee to hold its benchmark interest rate steady in a range of 3.5%-3.75%.
+######################
+Output:
+("entity"<|>CENTRAL INSTITUTION<|>ORGANIZATION<|>The Central Institution is the Federal Reserve of Verdantis, which is setting interest rates on Monday and Thursday)
+##
+("entity"<|>MARTIN SMITH<|>PERSON<|>Martin Smith is the chair of the Central Institution)
+##
+("entity"<|>MARKET STRATEGY COMMITTEE<|>ORGANIZATION<|>The Central Institution committee makes key decisions about interest rates and the growth of Verdantis's money supply)
+##
+("relationship"<|>MARTIN SMITH<|>CENTRAL INSTITUTION<|>Martin Smith is the Chair of the Central Institution and will answer questions at a press conference<|>9)
+<|COMPLETE|>
+
+######################
+Example 2:
+Entity_types: ORGANIZATION
+Text:
+TechGlobal's (TG) stock skyrocketed in its opening day on the Global Exchange Thursday. But IPO experts warn that the semiconductor corporation's debut on the public markets isn't indicative of how other newly listed companies may perform.
+
+TechGlobal, a formerly public company, was taken private by Vision Holdings in 2014. The well-established chip designer says it powers 85% of premium smartphones.
+######################
+Output:
+("entity"<|>TECHGLOBAL<|>ORGANIZATION<|>TechGlobal is a stock now listed on the Global Exchange which powers 85% of premium smartphones)
+##
+("entity"<|>VISION HOLDINGS<|>ORGANIZATION<|>Vision Holdings is a firm that previously owned TechGlobal)
+##
+("relationship"<|>TECHGLOBAL<|>VISION HOLDINGS<|>Vision Holdings formerly owned TechGlobal from 2014 until present<|>5)
+<|COMPLETE|>
+
+######################
+-Real Data-
+######################
+Entity_types: {entity_types}
+Text: {input_text}
+######################
+Output:
+```
+
+</details>
 
 To illustrate, suppose a chunk contained the following text:
 
@@ -99,11 +168,106 @@ Given a user query, community summaries at a chosen level can be used to generat
 
 First, the query is answered in parallel using each community summary (map step), and each answer is given a helpfulness score. The most helpful answers are then elaborated on to produce the final answer (reduce step).
 
-![Global search map phase](assets/graph_rag/image-2.png)
-*Map phase*
 
-![Global search reduce phase](assets/graph_rag/image-3.png)
-*Reduce phase*
+<details>
+<summary>Full map-step system prompt (GraphRAG source)</summary>
+
+```text
+---Role---
+
+You are a helpful assistant responding to questions about data in the tables provided.
+
+
+---Goal---
+
+Generate a response consisting of a list of key points that responds to the user's question, summarizing all relevant information in the input data tables.
+
+You should use the data provided in the data tables below as the primary context for generating the response.
+If you don't know the answer or if the input data tables do not contain sufficient information to provide an answer, just say so. Do not make anything up.
+
+Each key point in the response should have the following element:
+- Description: A comprehensive description of the point.
+- Importance Score: An integer score between 0-100 that indicates how important the point is in answering the user's question. An 'I don't know' type of response should have a score of 0.
+
+The response should be JSON formatted as follows:
+{{
+    "points": [
+        {{"description": "Description of point 1 [Data: Reports (report ids)]", "score": score_value}},
+        {{"description": "Description of point 2 [Data: Reports (report ids)]", "score": score_value}}
+    ]
+}}
+
+The response shall preserve the original meaning and use of modal verbs such as "shall", "may" or "will".
+
+Points supported by data should list the relevant reports as references as follows:
+"This is an example sentence supported by data references [Data: Reports (report ids)]"
+
+**Do not list more than 5 record ids in a single reference**. Instead, list the top 5 most relevant record ids and add "+more" to indicate that there are more.
+
+For example:
+"Person X is the owner of Company Y and subject to many allegations of wrongdoing [Data: Reports (2, 7, 64, 46, 34, +more)]. He is also CEO of company X [Data: Reports (1, 3)]"
+
+where 1, 2, 3, 7, 34, 46, and 64 represent the id (not the index) of the relevant data report in the provided tables.
+
+Do not include information where the supporting evidence for it is not provided.
+
+Limit your response length to {max_length} words.
+
+---Data tables---
+
+{context_data}
+```
+</details>
+
+
+
+<details>
+<summary>Full reduce-step system prompt (GraphRAG source)</summary>
+
+```text
+---Role---
+
+You are a helpful assistant responding to questions about a dataset by synthesizing perspectives from multiple analysts.
+
+
+---Goal---
+
+Generate a response of the target length and format that responds to the user's question, summarize all the reports from multiple analysts who focused on different parts of the dataset.
+
+Note that the analysts' reports provided below are ranked in the **descending order of importance**.
+
+If you don't know the answer or if the provided reports do not contain sufficient information to provide an answer, just say so. Do not make anything up.
+
+The final response should remove all irrelevant information from the analysts' reports and merge the cleaned information into a comprehensive answer that provides explanations of all the key points and implications appropriate for the response length and format.
+
+Add sections and commentary to the response as appropriate for the length and format. Style the response in markdown.
+
+The response shall preserve the original meaning and use of modal verbs such as "shall", "may" or "will".
+
+The response should also preserve all the data references previously included in the analysts' reports, but do not mention the roles of multiple analysts in the analysis process.
+
+**Do not list more than 5 record ids in a single reference**. Instead, list the top 5 most relevant record ids and add "+more" to indicate that there are more.
+
+For example:
+
+"Person X is the owner of Company Y and subject to many allegations of wrongdoing [Data: Reports (2, 7, 34, 46, 64, +more)]. He is also CEO of company X [Data: Reports (1, 3)]"
+
+where 1, 2, 3, 7, 34, 46, and 64 represent the id (not the index) of the relevant data record.
+
+Do not include information where the supporting evidence for it is not provided.
+
+Limit your response length to {max_length} words.
+
+---Target response length and format---
+
+{response_type}
+
+
+---Analyst Reports---
+
+{report_data}
+```
+</details>
 
 The community level can be fixed in advance, or chosen dynamically. In the dynamic case, the LLM first rates how relevant each level-0 community is to the user query, and the search only descends into a community's children if that community's report is deemed relevant.
 

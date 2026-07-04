@@ -1,6 +1,6 @@
 ---
 title: "Word Embeddings"
-date: 2025-10-18 12:00:00 +0330
+date: 2025-10-20 12:00:00 +0330
 categories:
    - NLP
    - Machine Learning

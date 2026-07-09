@@ -152,7 +152,14 @@ export default function Movies() {
         );
         break;
       default:
-        sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        sorted.sort((a, b) => {
+          const ka = a.updated_at || a.created_at || "";
+          const kb = b.updated_at || b.created_at || "";
+          if (!ka && !kb) return 0;
+          if (!ka) return 1;
+          if (!kb) return -1;
+          return new Date(kb) - new Date(ka);
+        });
     }
     return sorted;
   }, [movies, filter, search, sort]);

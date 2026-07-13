@@ -46,10 +46,15 @@ export default function Movies() {
   const [imdbInput, setImdbInput] = useState("");
   const [formMsg, setFormMsg] = useState({ text: "", ok: false });
   const [adding, setAdding] = useState(false);
-  const [editId, setEditId] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [editImdbId, setEditImdbId] = useState(null);
   const [editStatus, setEditStatus] = useState("not_seen");
   const [editComment, setEditComment] = useState("");
+  const [editUpdatedAt, setEditUpdatedAt] = useState("");
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadMovies = useCallback(async () => {
     setState("loading");
@@ -73,6 +78,34 @@ export default function Movies() {
   useEffect(() => {
     loadMovies();
   }, [loadMovies]);
+
+  const isImdbId = (v) => /^tt\d{7,8}$/.test(v);
+
+  useEffect(() => {
+    const q = imdbInput.trim();
+    if (!q || isImdbId(q)) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSuggestLoading(false);
+      return;
+    }
+    setSuggestLoading(true);
+    setShowSuggestions(true);
+    const t = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/search?title=${encodeURIComponent(q)}`
+        );
+        const data = await res.json();
+        setSuggestions(data.Search || []);
+      } catch {
+        setSuggestions([]);
+      } finally {
+        setSuggestLoading(false);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [imdbInput]);
 
   const visible = useMemo(() => {
     let result = movies.filter((m) => m.status === filter);
@@ -168,35 +201,47 @@ export default function Movies() {
   };
 
   const openEdit = (movie) => {
-    setEditId(movie.id);
+    setEditImdbId(movie.imdbId);
     setEditStatus(movie.status || "not_seen");
     setEditComment(movie.comment || "");
+    setEditUpdatedAt(
+      movie.updated_at
+        ? new Date(movie.updated_at).toISOString().slice(0, 16)
+        : ""
+    );
   };
 
-  const closeEdit = useCallback(() => setEditId(null), []);
+  const closeEdit = useCallback(() => setEditImdbId(null), []);
 
   const saveEdit = async () => {
-    if (!editId) return;
+    if (!editImdbId) return;
     setSaving(true);
+    const payload = { status: editStatus, comment: editComment };
+    if (editUpdatedAt) {
+      const d = new Date(editUpdatedAt);
+      if (!isNaN(d)) payload.updated_at = d.toISOString();
+    } else {
+      payload.updated_at = new Date().toISOString();
+    }
     try {
       const res = await fetch(
-        `${API_BASE}/api/edit/${encodeURIComponent(editId)}`,
+        `${API_BASE}/api/edit/${encodeURIComponent(editImdbId)}`,
         {
           method: "PATCH",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: editStatus, comment: editComment }),
+          body: JSON.stringify(payload),
         }
       );
       if (res.ok) {
         setMovies((prev) =>
           prev.map((m) =>
-            String(m.id) === String(editId)
+            String(m.imdbId) === String(editImdbId)
               ? {
                   ...m,
                   status: editStatus,
                   comment: editComment,
-                  updated_at: new Date().toISOString(),
+                  updated_at: payload.updated_at || m.updated_at,
                 }
               : m
           )
@@ -212,6 +257,30 @@ export default function Movies() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!editImdbId) return;
+    if (!window.confirm("Delete this movie from your collection?")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(
+        `${API_BASE}/api/movies?imdbId=${encodeURIComponent(editImdbId)}`,
+        { method: "DELETE", credentials: "include" }
+      );
+      if (res.ok) {
+        setMovies((prev) =>
+          prev.filter((m) => String(m.imdbId) !== String(editImdbId))
+        );
+        closeEdit();
+      } else {
+        alert("Couldn't delete that movie. Please try again.");
+      }
+    } catch {
+      alert("Network error — couldn't reach the server.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") closeEdit();
@@ -220,7 +289,7 @@ export default function Movies() {
     return () => document.removeEventListener("keydown", onKey);
   }, [closeEdit]);
 
-  const editing = movies.find((m) => String(m.id) === String(editId));
+  const editing = movies.find((m) => String(m.imdbId) === String(editImdbId));
 
   return (
     <section className="movies-section">
@@ -239,17 +308,67 @@ export default function Movies() {
         </div>
       </div>
 
-      <form className="add-form" onSubmit={handleAdd}>
+      <form
+        className="add-form"
+        onSubmit={handleAdd}
+        autoComplete="off"
+      >
         <div className="field-wrap">
           <input
             type="text"
-            placeholder="IMDb ID, e.g. tt0111161"
+            placeholder="Title or IMDb ID, e.g. tt0111161"
             value={imdbInput}
             onChange={(e) => setImdbInput(e.target.value)}
+            onFocus={() => {
+              if (imdbInput.trim() && !isImdbId(imdbInput.trim()))
+                setShowSuggestions(true);
+            }}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
           />
           <div className="field-hint">
             Find the ID in any IMDb URL — imdb.com/title/<strong>tt0111161</strong>/
           </div>
+          {showSuggestions && !isImdbId(imdbInput.trim()) && (
+            <div className="suggest-dropdown">
+              {suggestLoading && (
+                <div className="suggest-empty">Searching…</div>
+              )}
+              {!suggestLoading && suggestions.length === 0 && (
+                <div className="suggest-empty">No matches found.</div>
+              )}
+              {!suggestLoading &&
+                suggestions.map((s) => (
+                  <button
+                    type="button"
+                    className="suggest-item"
+                    key={s.imdbID}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setImdbInput(s.imdbID);
+                      setSuggestions([]);
+                      setShowSuggestions(false);
+                    }}
+                  >
+                    {s.Poster && s.Poster !== "N/A" ? (
+                      <img
+                        className="suggest-poster"
+                        src={s.Poster}
+                        alt=""
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="suggest-poster suggest-poster-fallback" />
+                    )}
+                    <div className="suggest-info">
+                      <span className="suggest-title">{s.Title}</span>
+                      <span className="suggest-meta">
+                        {s.Year} · {s.imdbID} · {s.Type}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+            </div>
+          )}
         </div>
         <button type="submit" className="btn-add" disabled={adding}>
           {adding ? "Adding…" : "+ Add movie"}
@@ -355,7 +474,7 @@ export default function Movies() {
             const poster = textOrNA(t.Poster);
             const year = t.Year;
             return (
-              <li className="movie-card" key={m.id}>
+              <li className="movie-card" key={m.imdbId}>
                 <div className="poster-wrap">
                   {poster ? (
                     <img src={poster} alt={`${title} poster`} loading="lazy" />
@@ -440,6 +559,13 @@ export default function Movies() {
                 value={editComment}
                 onChange={(e) => setEditComment(e.target.value)}
               />
+              <label>Updated at</label>
+              <input
+                type="datetime-local"
+                className="edit-datetime"
+                value={editUpdatedAt}
+                onChange={(e) => setEditUpdatedAt(e.target.value)}
+              />
               {formatUpdatedAt(editing.updated_at) && (
                 <p className="modal-updated">
                   Last updated{" "}
@@ -447,17 +573,31 @@ export default function Movies() {
                 </p>
               )}
               <div className="modal-actions">
-                <button type="button" className="btn-cancel" onClick={closeEdit}>
-                  Cancel
-                </button>
                 <button
                   type="button"
-                  className="btn-save"
-                  onClick={saveEdit}
-                  disabled={saving}
+                  className="btn-delete"
+                  onClick={handleDelete}
+                  disabled={deleting}
                 >
-                  {saving ? "Saving…" : "Save changes"}
+                  {deleting ? "Deleting…" : "Delete"}
                 </button>
+                <div className="modal-actions-right">
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={closeEdit}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-save"
+                    onClick={saveEdit}
+                    disabled={saving}
+                  >
+                    {saving ? "Saving…" : "Save changes"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

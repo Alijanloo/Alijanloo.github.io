@@ -4,14 +4,6 @@ import "../styles/movies.css";
 
 const API_BASE = "https://rapid-lake-86f8.mahmoodjanlooali.workers.dev";
 
-function formatRuntime(seconds) {
-  if (!seconds) return null;
-  const mins = Math.round(seconds / 60);
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
-
 function formatUpdatedAt(dateStr) {
   if (!dateStr) return null;
   const d = new Date(dateStr);
@@ -32,47 +24,17 @@ function formatUpdatedAt(dateStr) {
   });
 }
 
-function Person({ person }) {
-  const img = person.primaryImage?.url;
-  const initials = (person.displayName || "?")
-    .split(" ")
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  return (
-    <div className="modal-person">
-      <div className="modal-person-avatar">
-        {img ? (
-          <img src={img} alt={person.displayName} loading="lazy" />
-        ) : (
-          <div className="modal-person-avatar-fallback">{initials}</div>
-        )}
-      </div>
-      <div>
-        <div className="modal-person-name">
-          {person.displayName || "Unknown"}
-        </div>
-        {person.primaryProfessions?.length > 0 && (
-          <div className="modal-person-prof">
-            {person.primaryProfessions.join(", ")}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+function splitList(value) {
+  if (!value || value === "N/A") return [];
+  return value
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
-function PeopleGroup({ label, people }) {
-  if (!people || people.length === 0) return null;
-  return (
-    <div className="modal-people-group">
-      <h4>{label}</h4>
-      {people.slice(0, 4).map((p, i) => (
-        <Person key={i} person={p} />
-      ))}
-    </div>
-  );
+function textOrNA(value) {
+  if (!value || value === "N/A") return null;
+  return value;
 }
 
 export default function Movies() {
@@ -117,13 +79,9 @@ export default function Movies() {
     if (search) {
       const q = search.toLowerCase();
       result = result.filter((m) => {
-        const title = (
-          m.imdb?.primaryTitle ||
-          m.imdb?.originalTitle ||
-          m.imdbId ||
-          ""
-        ).toLowerCase();
-        const genres = (m.imdb?.genres || []).join(" ").toLowerCase();
+        const t = m.imdb || {};
+        const title = (t.Title || m.imdbId || "").toLowerCase();
+        const genres = (t.Genre || "").toLowerCase();
         return title.includes(q) || genres.includes(q);
       });
     }
@@ -131,24 +89,28 @@ export default function Movies() {
     switch (sort) {
       case "title_asc":
         sorted.sort((a, b) =>
-          (a.imdb?.primaryTitle || "").localeCompare(b.imdb?.primaryTitle || "")
+          (a.imdb?.Title || "").localeCompare(b.imdb?.Title || "")
         );
         break;
       case "year_desc":
         sorted.sort(
-          (a, b) => (b.imdb?.startYear || 0) - (a.imdb?.startYear || 0)
+          (a, b) =>
+            (parseInt(b.imdb?.Year, 10) || 0) -
+            (parseInt(a.imdb?.Year, 10) || 0)
         );
         break;
       case "year_asc":
         sorted.sort(
-          (a, b) => (a.imdb?.startYear || 0) - (b.imdb?.startYear || 0)
+          (a, b) =>
+            (parseInt(a.imdb?.Year, 10) || 0) -
+            (parseInt(b.imdb?.Year, 10) || 0)
         );
         break;
       case "rating_desc":
         sorted.sort(
           (a, b) =>
-            (b.imdb?.rating?.aggregateRating || 0) -
-            (a.imdb?.rating?.aggregateRating || 0)
+            (parseFloat(b.imdb?.imdbRating) || 0) -
+            (parseFloat(a.imdb?.imdbRating) || 0)
         );
         break;
       default:
@@ -386,11 +348,12 @@ export default function Movies() {
         {state === "ok" &&
           visible.map((m) => {
             const t = m.imdb || {};
-            const title = t.primaryTitle || t.originalTitle || m.imdbId;
-            const runtime = formatRuntime(t.runtimeSeconds);
-            const rating = t.rating?.aggregateRating;
-            const genres = (t.genres || []).slice(0, 3);
-            const poster = t.primaryImage?.url;
+            const title = t.Title || m.imdbId;
+            const runtime = textOrNA(t.Runtime);
+            const rating = parseFloat(t.imdbRating);
+            const genres = splitList(t.Genre).slice(0, 3);
+            const poster = textOrNA(t.Poster);
+            const year = t.Year;
             return (
               <li className="movie-card" key={m.id}>
                 <div className="poster-wrap">
@@ -411,7 +374,7 @@ export default function Movies() {
                 <div className="card-body">
                   <h3 className="card-title">{title}</h3>
                   <div className="card-meta">
-                    {t.startYear ? <span>{t.startYear}</span> : <span>{m.imdbId}</span>}
+                    {year ? <span>{year}</span> : <span>{m.imdbId}</span>}
                     {runtime && (
                       <>
                         <span className="dot">·</span>
@@ -428,7 +391,9 @@ export default function Movies() {
                       ))}
                     </div>
                   )}
-                  {t.plot && <p className="card-plot">{t.plot}</p>}
+                  {textOrNA(t.Plot) && (
+                    <p className="card-plot">{t.Plot}</p>
+                  )}
                   <div className="card-actions">
                     <button type="button" onClick={() => openEdit(m)}>
                       Details
@@ -504,42 +469,64 @@ export default function Movies() {
 
 function MovieModalBody({ movie }) {
   const t = movie.imdb || {};
-  const runtime = formatRuntime(t.runtimeSeconds);
-  const poster = t.primaryImage?.url;
-  const rating = t.rating?.aggregateRating;
-  const yearStr = t.startYear
-    ? String(t.startYear) +
-      (t.endYear && t.endYear !== t.startYear ? `–${t.endYear}` : "")
-    : "";
-  const countries = (t.originCountries || []).map((c) => c.name).join(", ");
-  const languages = (t.spokenLanguages || []).map((l) => l.name).join(", ");
+  const runtime = textOrNA(t.Runtime);
+  const poster = textOrNA(t.Poster);
+  const rating = parseFloat(t.imdbRating);
+  const votes = textOrNA(t.imdbVotes);
+  const year = textOrNA(t.Year);
+  const genres = splitList(t.Genre);
+  const type = textOrNA(t.Type);
+  const directors = textOrNA(t.Director);
+  const writers = textOrNA(t.Writer);
+  const actors = textOrNA(t.Actors);
+  const country = textOrNA(t.Country);
+  const language = textOrNA(t.Language);
+  const rated = textOrNA(t.Rated);
+  const released = textOrNA(t.Released);
+  const awards = textOrNA(t.Awards);
+  const metascore = textOrNA(t.Metascore);
+  const boxOffice = textOrNA(t.BoxOffice);
+  const ratings = (t.Ratings || []).filter(
+    (r) => r.Value && r.Value !== "N/A"
+  );
+
+  const typeLabel = type
+    ? type.replace(/([A-Z])/g, " $1").trim()
+    : null;
+
+  const crew = [];
+  if (directors) crew.push(["Director", directors]);
+  if (writers) crew.push(["Writer", writers]);
+  if (actors) crew.push(["Actors", actors]);
+
   const details = [];
-  if (countries) details.push(["Country", countries]);
-  if (languages) details.push(["Language", languages]);
-  if (yearStr) details.push(["Year", yearStr]);
+  if (rated) details.push(["Rated", rated]);
+  if (released) details.push(["Released", released]);
+  if (year) details.push(["Year", year]);
   if (runtime) details.push(["Runtime", runtime]);
-  if (t.type)
-    details.push(["Type", t.type.replace(/([A-Z])/g, " $1").trim()]);
+  if (country) details.push(["Country", country]);
+  if (language) details.push(["Language", language]);
+  if (metascore) details.push(["Metascore", metascore]);
+  if (boxOffice) details.push(["Box Office", boxOffice]);
+  if (typeLabel) details.push(["Type", typeLabel]);
 
   return (
     <>
       <div className="modal-header">
         <div className="modal-poster">
           {poster ? (
-            <img src={poster} alt={`${t.primaryTitle || ""} poster`} />
+            <img src={poster} alt={`${t.Title || ""} poster`} />
           ) : (
             <div className="modal-poster-fallback" />
           )}
         </div>
         <div className="modal-header-info">
-          {t.type && (
-            <span className="modal-type-badge">
-              {t.type.replace(/([A-Z])/g, " $1").trim()}
-            </span>
+          {typeLabel && (
+            <span className="modal-type-badge">{typeLabel}</span>
           )}
-          <h2>{t.primaryTitle || movie.imdbId}</h2>
+          <h2>{t.Title || movie.imdbId}</h2>
           <div className="modal-meta-line">
-            {yearStr && <span>{yearStr}</span>}
+            {year && <span>{year}</span>}
             {runtime && (
               <>
                 <span className="dot">·</span>
@@ -552,16 +539,16 @@ function MovieModalBody({ movie }) {
           {rating && (
             <div className="modal-rating-row">
               <span className="rating-num">★ {rating.toFixed(1)}</span>
-              {t.rating?.voteCount && (
+              {votes && (
                 <span className="vote-count">
-                  ({t.rating.voteCount.toLocaleString()} votes)
+                  ({votes.replace(/,/g, "")} votes)
                 </span>
               )}
             </div>
           )}
-          {(t.genres || []).length > 0 && (
+          {genres.length > 0 && (
             <div className="modal-genres">
-              {t.genres.map((g) => (
+              {genres.map((g) => (
                 <span className="genre-tag" key={g}>
                   {g}
                 </span>
@@ -572,20 +559,42 @@ function MovieModalBody({ movie }) {
       </div>
 
       <div className="modal-body">
-        {t.plot && (
+        {textOrNA(t.Plot) && (
           <div>
             <p className="modal-section-label">Plot</p>
-            <p className="modal-plot">{t.plot}</p>
+            <p className="modal-plot">{t.Plot}</p>
           </div>
         )}
-        {(t.directors?.length || t.writers?.length || t.stars?.length) > 0 && (
+        {crew.length > 0 && (
           <div>
             <p className="modal-section-label">Cast &amp; Crew</p>
-            <div className="modal-people-grid">
-              <PeopleGroup label="Directors" people={t.directors} />
-              <PeopleGroup label="Writers" people={t.writers} />
-              <PeopleGroup label="Stars" people={t.stars} />
+            <div className="modal-details-grid">
+              {crew.map(([label, value]) => (
+                <div className="modal-detail-item" key={label}>
+                  <span className="modal-detail-label">{label}</span>
+                  <span className="modal-detail-value">{value}</span>
+                </div>
+              ))}
             </div>
+          </div>
+        )}
+        {ratings.length > 0 && (
+          <div>
+            <p className="modal-section-label">Ratings</p>
+            <div className="modal-details-grid">
+              {ratings.map((r) => (
+                <div className="modal-detail-item" key={r.Source}>
+                  <span className="modal-detail-label">{r.Source}</span>
+                  <span className="modal-detail-value">{r.Value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {awards && (
+          <div>
+            <p className="modal-section-label">Awards</p>
+            <p className="modal-plot">{awards}</p>
           </div>
         )}
         {details.length > 0 && (
@@ -597,23 +606,6 @@ function MovieModalBody({ movie }) {
                   <span className="modal-detail-label">{label}</span>
                   <span className="modal-detail-value">{value}</span>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
-        {(t.interests || []).length > 0 && (
-          <div>
-            <p className="modal-section-label">Interests</p>
-            <div className="modal-interests">
-              {t.interests.map((i, idx) => (
-                <span
-                  className={
-                    "modal-interest-tag" + (i.isSubgenre ? " subgenre" : "")
-                  }
-                  key={idx}
-                >
-                  {i.name}
-                </span>
               ))}
             </div>
           </div>

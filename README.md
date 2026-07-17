@@ -12,8 +12,10 @@ NLP, software development, and book/film notes. Originally built with Jekyll
 ## ✨ Features
 
 - 📝 **Markdown posts** with front matter, math (KaTeX), and syntax highlighting
-- 🌐 **Bilingual** (English + Persian) with browser detection, a sidebar toggle,
-  per-content RTL, and automatic switching between parallel post versions
+- 🌐 **Bilingual** (English + Persian) posts with browser detection, a
+  home-page language toggle, per-content RTL, and automatic switching between
+  parallel post versions. The Worker's `/get_posts` API filters posts by
+  language server-side.
 - 🗂️ **Categories, Tags, and Archives**, all language-aware
 - ✍️ **In-browser post editor** — create, edit, and delete posts directly from
   the site (no rebuild/deploy needed); images upload automatically to the

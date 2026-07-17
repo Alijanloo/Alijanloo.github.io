@@ -195,6 +195,35 @@ img {
   color: var(--accent);
 }
 
+/* auth */
+.sidebar-auth {
+  display: flex;
+  justify-content: center;
+  margin: -0.5rem 0 1.25rem;
+}
+.auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-alt);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.auth-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
 /* nav */
 .sidebar-nav {
   width: 100%;
@@ -310,6 +339,34 @@ img {
   margin: 0 0 1.5rem;
   font-weight: 800;
 }
+
+.home-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.home-heading-row .page-heading {
+  margin: 0 0 1.5rem;
+}
+.btn-add-post {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  margin-bottom: 1.5rem;
+}
+.btn-add-post:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
 .empty-note {
   color: var(--text-muted);
 }
@@ -356,9 +413,36 @@ img {
   box-shadow: var(--shadow);
   transition: transform 0.18s, border-color 0.18s;
 }
+.card-wrapper {
+  position: relative;
+}
 .card-wrapper a.post-card {
   color: inherit;
   text-decoration: none;
+}
+.card-edit-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  box-shadow: var(--shadow);
+}
+.card-edit-btn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+[dir="rtl"] .card-edit-btn {
+  right: auto;
+  left: 0.6rem;
 }
 .post-card:hover {
   transform: translateY(-3px);

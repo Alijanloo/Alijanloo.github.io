@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { projects } from "../lib/projects.js";
 
 const SOCIALS = [
@@ -36,6 +37,7 @@ const NAV = [
 export default function Sidebar({ open, onNavigate }) {
   const { lang, toggleLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { loading: authLoading, loggedIn, user, login, logout } = useAuth();
   const location = useLocation();
   const projectsActive = location.pathname.startsWith("/projects/");
   const [projectsOpen, setProjectsOpen] = useState(projectsActive);
@@ -78,6 +80,31 @@ export default function Sidebar({ open, onNavigate }) {
           <i className={theme === "dark" ? "fas fa-sun" : "fas fa-moon"} />
         </button>
       </div>
+
+      {!authLoading && (
+        <div className="sidebar-auth">
+          {loggedIn ? (
+            <button
+              type="button"
+              className="auth-btn"
+              onClick={logout}
+              title={user?.login ? `Logged in as ${user.login}` : "Logged in"}
+            >
+              {user?.avatar_url ? (
+                <img className="auth-avatar" src={user.avatar_url} alt="" />
+              ) : (
+                <i className="fas fa-user" />
+              )}
+              <span>Logout</span>
+            </button>
+          ) : (
+            <button type="button" className="auth-btn" onClick={login}>
+              <i className="fab fa-github" />
+              <span>Login</span>
+            </button>
+          )}
+        </div>
+      )}
 
       <nav className="sidebar-nav">
         <ul className="nav">

@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import {
-  getPostBySlug,
-  getAlternateSlug,
-} from "../lib/posts.js";
+import { usePosts, getAlternateSlug } from "../lib/posts.js";
+import { fetchDynamicPostBySlug } from "../lib/postsApi.js";
+import { toAssetUrl } from "../lib/postUtils.js";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import Markdown from "../components/Markdown.jsx";
 import Giscus from "../components/Giscus.jsx";
@@ -51,9 +50,31 @@ export default function Post() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { lang, setLang, t } = useLanguage();
-  const post = getPostBySlug(slug);
+  const { posts: allPosts } = usePosts();
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
   const articleRef = useRef(null);
   const [toc, setToc] = useState([]);
+
+  // Posts are served from the content repo via the Worker.
+  useEffect(() => {
+    let alive = true;
+    setLoading(true);
+    setPost(null);
+    fetchDynamicPostBySlug(slug)
+      .then((found) => {
+        if (alive) setPost(found);
+      })
+      .catch(() => {
+        if (alive) setPost(null);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [slug]);
 
   // When opening a post, sync the global language to the post's language.
   useEffect(() => {
@@ -61,18 +82,18 @@ export default function Post() {
       setLang(post.lang);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slug]);
+  }, [slug, post]);
 
   // When the user toggles language while reading, jump to the alternate
   // language version of this post if one exists.
   useEffect(() => {
     if (!post) return;
     if (post.lang !== lang) {
-      const alt = getAlternateSlug(post.slug);
+      const alt = getAlternateSlug(allPosts, post.slug);
       if (alt) navigate(`/posts/${alt}`, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lang]);
+  }, [lang, allPosts, post]);
 
   // Build a table of contents from the rendered headings.
   useEffect(() => {
@@ -86,6 +107,7 @@ export default function Post() {
     setToc(items);
   }, [slug, post]);
 
+  if (loading) return <div className="route-loading">Loading…</div>;
   if (!post) return <NotFound />;
 
   const shareUrl =
@@ -95,7 +117,7 @@ export default function Post() {
 
   return (
     <article className="post" dir={post.dir}>
-      <SEO title={post.title} description={post.excerpt} image={post.cover} />
+      <SEO title={post.title} description={post.excerpt} image={toAssetUrl(post.cover)} />
 
       <header className="post-header">
         <h1 className="post-title">{post.title}</h1>
@@ -119,7 +141,7 @@ export default function Post() {
 
       {post.cover && (
         <div className="post-cover">
-          <img src={post.cover} alt={post.title} />
+          <img src={toAssetUrl(post.cover)} alt={post.title} />
         </div>
       )}
 

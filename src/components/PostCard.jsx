@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import { toAssetUrl } from "../lib/postUtils.js";
 
 function formatDate(date, lang) {
   try {
@@ -13,14 +14,25 @@ function formatDate(date, lang) {
   }
 }
 
-export default function PostCard({ post }) {
+export default function PostCard({ post, editHref }) {
   const { lang, t } = useLanguage();
   return (
     <article className="card-wrapper" dir={post.dir}>
+      {editHref && (
+        <Link
+          to={editHref}
+          className="card-edit-btn"
+          onClick={(e) => e.stopPropagation()}
+          aria-label="Edit post"
+          title="Edit post"
+        >
+          <i className="fas fa-pen" />
+        </Link>
+      )}
       <Link to={`/posts/${post.slug}`} className="post-card">
         {post.cover && (
           <div className="card-cover">
-            <img src={post.cover} alt={post.title} loading="lazy" />
+            <img src={toAssetUrl(post.cover)} alt={post.title} loading="lazy" />
           </div>
         )}
         <div className="card-body">

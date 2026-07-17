@@ -13,6 +13,7 @@ const TagDetail = lazy(() => import("./pages/TagDetail.jsx"));
 const Archives = lazy(() => import("./pages/Archives.jsx"));
 const About = lazy(() => import("./pages/About.jsx"));
 const Movies = lazy(() => import("./pages/Movies.jsx"));
+const Write = lazy(() => import("./pages/Write.jsx"));
 const Project = lazy(() => import("./pages/Project.jsx"));
 const NotFound = lazy(() => import("./pages/NotFound.jsx"));
 
@@ -40,6 +41,8 @@ export default function App() {
             <Route path="/archives" element={<Archives />} />
             <Route path="/about" element={<About />} />
             <Route path="/movies" element={<Movies />} />
+            <Route path="/write" element={<Write />} />
+            <Route path="/write/:slug" element={<Write />} />
             <Route path="/projects/:name" element={<Project />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

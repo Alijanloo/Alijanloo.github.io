@@ -1,6 +1,5 @@
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { getArchives } from "../lib/posts.js";
+import { usePosts, getArchives } from "../lib/posts.js";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import SEO from "../components/SEO.jsx";
 
@@ -17,13 +16,16 @@ function formatDay(date, lang) {
 
 export default function Archives() {
   const { lang, t } = useLanguage();
-  const archives = useMemo(() => getArchives(lang), [lang]);
+  const { loading, posts } = usePosts();
+  const archives = getArchives(posts, lang);
 
   return (
     <div className="archives-page">
       <SEO title={t("tabs.archives")} />
       <h1 className="page-heading">{t("tabs.archives")}</h1>
-      {archives.length === 0 ? (
+      {loading ? (
+        <div className="route-loading">Loading…</div>
+      ) : archives.length === 0 ? (
         <p className="empty-note">{t("misc.no_posts")}</p>
       ) : (
         archives.map((group) => (

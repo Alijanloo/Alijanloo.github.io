@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
-import { getPostsByLang } from "../lib/posts.js";
+import { Link } from "react-router-dom";
+import { usePosts, getPostsByLang } from "../lib/posts.js";
 import { useLanguage } from "../context/LanguageContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import PostCard from "../components/PostCard.jsx";
 import Pagination from "../components/Pagination.jsx";
 import SEO from "../components/SEO.jsx";
@@ -9,9 +11,16 @@ const PER_PAGE = 10;
 
 export default function Home() {
   const { lang, t } = useLanguage();
+  const { loggedIn } = useAuth();
+  const { loading, posts: allPosts } = usePosts();
   const [page, setPage] = useState(1);
 
-  const posts = useMemo(() => getPostsByLang(lang), [lang]);
+  const posts = useMemo(() => {
+    return getPostsByLang(allPosts, lang).slice().sort((a, b) => {
+      if (a.pin !== b.pin) return a.pin ? -1 : 1;
+      return b.date - a.date;
+    });
+  }, [lang, allPosts]);
 
   // Reset to first page whenever the language changes.
   useEffect(() => {
@@ -30,13 +39,28 @@ export default function Home() {
   return (
     <div className="home-page">
       <SEO description="Personal blog of Ali Janloo - insights on AI, Machine Learning, NLP and daily thoughts." />
-      <h1 className="page-heading">{t("home.all_posts")}</h1>
-      {visible.length === 0 ? (
+      <div className="home-heading-row">
+        <h1 className="page-heading">{t("home.all_posts")}</h1>
+        {loggedIn && (
+          <Link to="/write" className="btn-add-post">
+            <i className="fas fa-plus" /> Add post
+          </Link>
+        )}
+      </div>
+      {loading ? (
+        <div className="route-loading">Loading…</div>
+      ) : visible.length === 0 ? (
         <p className="empty-note">{t("misc.no_posts")}</p>
       ) : (
         <div className="post-list">
           {visible.map((post) => (
-            <PostCard key={post.slug} post={post} />
+            <PostCard
+              key={post.slug}
+              post={post}
+              editHref={
+                loggedIn ? `/write/${encodeURIComponent(post.slug)}` : null
+              }
+            />
           ))}
         </div>
       )}

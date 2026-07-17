@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import SEO from "../components/SEO.jsx";
+import { API_BASE } from "../lib/apiBase.js";
 import "../styles/movies.css";
-
-const API_BASE = "https://rapid-lake-86f8.mahmoodjanlooali.workers.dev";
 
 function formatUpdatedAt(dateStr) {
   if (!dateStr) return null;
@@ -300,11 +299,6 @@ export default function Movies() {
           <h1>
             Movie <span className="accent">Tracker</span>
           </h1>
-          <div className="auth-row">
-            <a href={`${API_BASE}/login`}>Login with GitHub</a>
-            <span className="sep">|</span>
-            <a href={`${API_BASE}/api/logout`}>Logout</a>
-          </div>
         </div>
       </div>
 

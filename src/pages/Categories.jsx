@@ -1,18 +1,20 @@
-import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { getCategories } from "../lib/posts.js";
+import { usePosts, getCategories } from "../lib/posts.js";
 import { useLanguage } from "../context/LanguageContext.jsx";
 import SEO from "../components/SEO.jsx";
 
 export default function Categories() {
   const { lang, t } = useLanguage();
-  const categories = useMemo(() => getCategories(lang), [lang]);
+  const { loading, posts } = usePosts();
+  const categories = getCategories(posts, lang);
 
   return (
     <div className="taxonomy-page">
       <SEO title={t("tabs.categories")} />
       <h1 className="page-heading">{t("tabs.categories")}</h1>
-      {categories.length === 0 ? (
+      {loading ? (
+        <div className="route-loading">Loading…</div>
+      ) : categories.length === 0 ? (
         <p className="empty-note">{t("misc.no_posts")}</p>
       ) : (
         <div className="taxonomy-grid">

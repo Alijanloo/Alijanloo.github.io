@@ -5,15 +5,17 @@ import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
+import { toAssetUrl } from "../lib/postUtils.js";
 
-// Ensure asset references resolve from the site root. Markdown in the posts
-// uses both "/assets/x.jpg" and relative "assets/x.jpg" forms.
+// Asset references in posts are stored as bare slug paths
+// (e.g. "word-embedding/embedding_concept.png") and resolved through the
+// Worker's /assets proxy at render time. Absolute URLs and anchors pass
+// through untouched.
 function transformUrl(url) {
   if (!url) return url;
   if (/^(https?:)?\/\//.test(url) || url.startsWith("#") || url.startsWith("mailto:")) {
     return url;
   }
-  if (url.startsWith("assets/")) return "/" + url;
   return url;
 }
 
@@ -41,7 +43,12 @@ export default function Markdown({ children }) {
           );
         },
         img: ({ node, ...props }) => (
-          <img {...props} loading="lazy" alt={props.alt || ""} />
+          <img
+            {...props}
+            src={toAssetUrl(props.src)}
+            loading="lazy"
+            alt={props.alt || ""}
+          />
         ),
       }}
     >

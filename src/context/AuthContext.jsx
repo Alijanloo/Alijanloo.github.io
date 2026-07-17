@@ -52,6 +52,7 @@ export function AuthProvider({ children }) {
       value={{
         loading: status === "loading",
         loggedIn: status === "in",
+        canEdit: status === "in" && user?.login === "Alijanloo",
         user,
         login,
         logout,

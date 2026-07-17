@@ -90,7 +90,7 @@ function buildMarkdownContent({
 export default function Write() {
   const { slug: routeSlug } = useParams();
   const navigate = useNavigate();
-  const { loading: authLoading, loggedIn, login } = useAuth();
+  const { loading: authLoading, loggedIn, canEdit, login } = useAuth();
   const isEditMode = Boolean(routeSlug);
 
   const [loadingPost, setLoadingPost] = useState(isEditMode);
@@ -289,14 +289,20 @@ export default function Write() {
     return <div className="route-loading">Loading…</div>;
   }
 
-  if (!loggedIn) {
+  if (!canEdit) {
     return (
       <div className="write-page write-gate">
         <h1 className="page-heading">Sign in required</h1>
-        <p>You need to log in with GitHub (via the sidebar) to write posts.</p>
-        <button type="button" className="btn-add-post" onClick={login}>
-          <i className="fab fa-github" /> Login with GitHub
-        </button>
+        <p>
+          {loggedIn
+            ? "Only the site owner can write or edit posts."
+            : "You need to log in with GitHub (via the sidebar) to write posts."}
+        </p>
+        {!loggedIn && (
+          <button type="button" className="btn-add-post" onClick={login}>
+            <i className="fab fa-github" /> Login with GitHub
+          </button>
+        )}
       </div>
     );
   }

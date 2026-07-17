@@ -11,7 +11,7 @@ const PER_PAGE = 10;
 
 export default function Home() {
   const { lang, toggleLang, t } = useLanguage();
-  const { loggedIn } = useAuth();
+  const { canEdit } = useAuth();
   const { loading, posts } = usePosts(lang);
   const [page, setPage] = useState(1);
 
@@ -60,7 +60,7 @@ export default function Home() {
               FA
             </button>
           </div>
-          {loggedIn && (
+          {canEdit && (
             <Link to="/write" className="btn-add-post">
               <i className="fas fa-plus" /> Add post
             </Link>
@@ -78,7 +78,7 @@ export default function Home() {
               key={post.slug}
               post={post}
               editHref={
-                loggedIn ? `/write/${encodeURIComponent(post.slug)}` : null
+                canEdit ? `/write/${encodeURIComponent(post.slug)}` : null
               }
             />
           ))}

@@ -14,7 +14,8 @@ import {
 const LIST_PAGE_SIZE = 50;
 const CACHE_TTL_MS = 60 * 1000;
 
-let listCache = null; // { posts, fetchedAt }
+// Per-language cache (key "all" holds the unfiltered listing).
+let listCache = new Map();
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -78,12 +79,16 @@ function mapRawPost(filename, content) {
   };
 }
 
-// Fetches every dynamic post's listing metadata (paginating through
-// /get_posts as needed) and caches the merged result briefly, since it's
-// used by several listing pages.
-export async function fetchDynamicPosts({ force = false } = {}) {
-  if (!force && listCache && Date.now() - listCache.fetchedAt < CACHE_TTL_MS) {
-    return listCache.posts;
+// Fetches dynamic post listing metadata (paginating through /get_posts as
+// needed) and caches the merged result briefly, since it's used by several
+// listing pages. Pass `lang` to let the Worker filter server-side.
+export async function fetchDynamicPosts({ force = false, lang } = {}) {
+  const key = lang || "all";
+  if (!force) {
+    const cached = listCache.get(key);
+    if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
+      return cached.posts;
+    }
   }
 
   const posts = [];
@@ -91,9 +96,12 @@ export async function fetchDynamicPosts({ force = false } = {}) {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const res = await fetch(
-      `${API_BASE}/get_posts?page=${page}&limit=${LIST_PAGE_SIZE}`
-    );
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(LIST_PAGE_SIZE),
+    });
+    if (lang) params.set("lang", lang);
+    const res = await fetch(`${API_BASE}/get_posts?${params.toString()}`);
     if (!res.ok) break;
     const data = await res.json();
     posts.push(...(data.posts || []).map(mapIndexEntry));
@@ -101,12 +109,12 @@ export async function fetchDynamicPosts({ force = false } = {}) {
     page += 1;
   }
 
-  listCache = { posts, fetchedAt: Date.now() };
+  listCache.set(key, { posts, fetchedAt: Date.now() });
   return posts;
 }
 
 export function invalidateDynamicPostsCache() {
-  listCache = null;
+  listCache.clear();
 }
 
 // Fetches a single dynamic post's full markdown (front matter + body) by

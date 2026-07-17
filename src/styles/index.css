@@ -137,7 +137,7 @@ img {
 .sidebar-toggles {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
@@ -178,6 +178,41 @@ img {
 .slider.on {
   transform: translateX(18px);
 }
+
+/* Language switch (segmented pills on home page) */
+.lang-switch {
+  display: inline-flex;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.lang-option {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1.4;
+}
+.lang-option:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+.lang-option:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--bg-alt);
+}
+.lang-option.active {
+  background: var(--accent);
+  color: #fff;
+  cursor: default;
+}
+.lang-option:disabled {
+  cursor: default;
+}
 .icon-border {
   width: 1px;
   height: 18px;
@@ -198,8 +233,6 @@ img {
 /* auth */
 .sidebar-auth {
   display: flex;
-  justify-content: center;
-  margin: -0.5rem 0 1.25rem;
 }
 .auth-btn {
   display: flex;
@@ -344,11 +377,17 @@ img {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 .home-heading-row .page-heading {
-  margin: 0 0 1.5rem;
+  margin: 0;
+}
+.home-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 .btn-add-post {
   display: inline-flex;
@@ -359,9 +398,8 @@ img {
   background: var(--accent);
   color: #fff;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   white-space: nowrap;
-  margin-bottom: 1.5rem;
 }
 .btn-add-post:hover {
   text-decoration: none;

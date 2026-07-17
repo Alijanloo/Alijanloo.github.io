@@ -6,12 +6,13 @@ import {
 
 // All posts now live in the content repo and are served via the Worker.
 // This hook fetches the lightweight listing (index.json) once and shares
-// the result across every page that needs it.
-export function usePosts() {
+// the result across every page that needs it. Pass `lang` to fetch only
+// that language's posts (filtered server-side by the Worker).
+export function usePosts(lang) {
   const [state, setState] = useState({ loading: true, posts: [] });
   useEffect(() => {
     let alive = true;
-    fetchDynamicPosts()
+    fetchDynamicPosts({ lang })
       .then((posts) => {
         if (alive) setState({ loading: false, posts });
       })
@@ -21,7 +22,7 @@ export function usePosts() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [lang]);
   return state;
 }
 

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useLanguage } from "../context/LanguageContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { projects } from "../lib/projects.js";
+
+const SITE_TITLE = "Ali Janloo";
+const SITE_TAGLINE = "ML Engineer | NLP Enthusiast | AI Developer";
 
 const SOCIALS = [
   { type: "github", icon: "fab fa-github", url: "https://github.com/Alijanloo" },
@@ -26,16 +28,15 @@ const SOCIALS = [
 ];
 
 const NAV = [
-  { to: "/", icon: "fas fa-home", key: "home", end: true },
-  { to: "/categories", icon: "fas fa-stream", key: "categories" },
-  { to: "/tags", icon: "fas fa-tags", key: "tags" },
-  { to: "/archives", icon: "fas fa-archive", key: "archives" },
-  { to: "/about", icon: "fas fa-info-circle", key: "about" },
-  { to: "/movies", icon: "fas fa-film", key: "movies" },
+  { to: "/", icon: "fas fa-home", label: "HOME", end: true },
+  { to: "/categories", icon: "fas fa-stream", label: "CATEGORIES" },
+  { to: "/tags", icon: "fas fa-tags", label: "TAGS" },
+  { to: "/archives", icon: "fas fa-archive", label: "ARCHIVES" },
+  { to: "/about", icon: "fas fa-info-circle", label: "ABOUT" },
+  { to: "/movies", icon: "fas fa-film", label: "MOVIES" },
 ];
 
 export default function Sidebar({ open, onNavigate }) {
-  const { lang, toggleLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { loading: authLoading, loggedIn, user, login, logout } = useAuth();
   const location = useLocation();
@@ -50,27 +51,37 @@ export default function Sidebar({ open, onNavigate }) {
         </NavLink>
         <h1 className="site-title">
           <NavLink to="/" onClick={onNavigate}>
-            {t("site.title")}
+            {SITE_TITLE}
           </NavLink>
         </h1>
-        <p className="site-tagline">{t("site.tagline")}</p>
+        <p className="site-tagline">{SITE_TAGLINE}</p>
       </header>
 
       <div className="sidebar-toggles">
-        <div className="lang-toggle" onClick={toggleLang} role="button" tabIndex={0}>
-          <span className={"lang-label" + (lang === "en" ? " active" : "")}>
-            EN
-          </span>
-          <span className="switch" aria-hidden="true">
-            <span className={"slider" + (lang === "fa" ? " on" : "")} />
-          </span>
-          <span className={"lang-label" + (lang === "fa" ? " active" : "")}>
-            FA
-          </span>
-        </div>
-
-        <span className="icon-border" />
-
+        {!authLoading && (
+          <div className="sidebar-auth">
+            {loggedIn ? (
+              <button
+                type="button"
+                className="auth-btn"
+                onClick={logout}
+                title={user?.login ? `Logged in as ${user.login}` : "Logged in"}
+              >
+                {user?.avatar_url ? (
+                  <img className="auth-avatar" src={user.avatar_url} alt="" />
+                ) : (
+                  <i className="fas fa-user" />
+                )}
+                <span>Logout</span>
+              </button>
+            ) : (
+              <button type="button" className="auth-btn" onClick={login}>
+                <i className="fab fa-github" />
+                <span>Login</span>
+              </button>
+            )}
+          </div>
+        )}
         <button
           type="button"
           className="mode-toggle"
@@ -80,31 +91,6 @@ export default function Sidebar({ open, onNavigate }) {
           <i className={theme === "dark" ? "fas fa-sun" : "fas fa-moon"} />
         </button>
       </div>
-
-      {!authLoading && (
-        <div className="sidebar-auth">
-          {loggedIn ? (
-            <button
-              type="button"
-              className="auth-btn"
-              onClick={logout}
-              title={user?.login ? `Logged in as ${user.login}` : "Logged in"}
-            >
-              {user?.avatar_url ? (
-                <img className="auth-avatar" src={user.avatar_url} alt="" />
-              ) : (
-                <i className="fas fa-user" />
-              )}
-              <span>Logout</span>
-            </button>
-          ) : (
-            <button type="button" className="auth-btn" onClick={login}>
-              <i className="fab fa-github" />
-              <span>Login</span>
-            </button>
-          )}
-        </div>
-      )}
 
       <nav className="sidebar-nav">
         <ul className="nav">
@@ -117,7 +103,7 @@ export default function Sidebar({ open, onNavigate }) {
                 onClick={onNavigate}
               >
                 <i className={"fa-fw " + item.icon} />
-                <span className="tab-text">{t(`tabs.${item.key}`)}</span>
+                <span className="tab-text">{item.label}</span>
               </NavLink>
             </li>
           ))}
@@ -130,7 +116,7 @@ export default function Sidebar({ open, onNavigate }) {
                 onClick={() => setProjectsOpen((o) => !o)}
               >
                 <i className="fa-fw fas fa-folder-open" />
-                <span className="tab-text">{t("tabs.projects")}</span>
+                <span className="tab-text">PROJECTS</span>
                 <i
                   className={
                     "fas fa-chevron-down chevron-icon" +

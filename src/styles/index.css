@@ -660,6 +660,10 @@ img {
    ============================================================ */
 .post {
   max-width: 100%;
+  min-width: 0;
+  overflow-x: clip;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 .post-header {
   margin-bottom: 1.5rem;
@@ -669,6 +673,7 @@ img {
   color: var(--heading);
   margin: 0 0 0.75rem;
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 .post-meta {
   display: flex;
@@ -694,20 +699,28 @@ img {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
 }
 .post-content {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   font-size: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 .post-toc {
   position: sticky;
   top: 1.5rem;
   flex: 0 0 220px;
+  min-width: 0;
+  max-width: 100%;
   font-size: 0.85rem;
   border-left: 2px solid var(--border);
   padding-left: 1rem;
   max-height: 80vh;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 .toc-title {
@@ -731,6 +744,7 @@ img {
 }
 .post-toc a {
   color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 .post-toc a:hover {
   color: var(--accent);
@@ -761,6 +775,8 @@ img {
   margin: 1rem 0;
 }
 .post-content img {
+  max-width: 100%;
+  height: auto;
   border-radius: 8px;
   display: block;
   margin: 1.5rem auto;
@@ -779,6 +795,8 @@ img {
   border-radius: 5px;
   font-size: 0.88em;
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .post-content pre {
   background: #0d1117;
@@ -786,6 +804,7 @@ img {
   border-radius: 10px;
   padding: 1rem 1.25rem;
   overflow-x: auto;
+  max-width: 100%;
   margin: 1.5rem 0;
 }
 .post-content pre code {
@@ -793,11 +812,24 @@ img {
   padding: 0;
   font-size: 0.85rem;
   color: #e6edf3;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.post-content .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+.post-content .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .post-content table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5rem 0;
+  margin: 0;
   font-size: 0.9rem;
 }
 .post-content th,
@@ -858,6 +890,16 @@ img {
 [dir="rtl"] {
   font-family: var(--font-fa);
   text-align: right;
+}
+[dir="rtl"] .post-toc {
+  border-left: none;
+  border-right: 2px solid var(--border);
+  padding-left: 0;
+  padding-right: 1rem;
+}
+[dir="rtl"] .post-toc .toc-level-3 {
+  padding-left: 0;
+  padding-right: 0.9rem;
 }
 [dir="rtl"] .post-content ul,
 [dir="rtl"] .post-content ol {
@@ -994,13 +1036,16 @@ img {
   .post-layout {
     flex-direction: column;
   }
-  .post-toc {
+  .post-toc,
+  [dir="rtl"] .post-toc {
     position: static;
     flex: 1 1 auto;
     width: 100%;
     border-left: none;
+    border-right: none;
     border-top: 1px solid var(--border);
     padding-left: 0;
+    padding-right: 0;
     padding-top: 1rem;
     order: -1;
     margin-bottom: 1.5rem;

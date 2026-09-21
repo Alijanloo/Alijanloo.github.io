@@ -50,6 +50,11 @@ export default function Markdown({ children }) {
             alt={props.alt || ""}
           />
         ),
+        table: ({ node, ...props }) => (
+          <div className="table-wrap">
+            <table {...props} />
+          </div>
+        ),
       }}
     >
       {children}

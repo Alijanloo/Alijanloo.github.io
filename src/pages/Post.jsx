@@ -151,7 +151,7 @@ export default function Post() {
         </div>
 
         {toc.length > 1 && (
-          <aside className="post-toc" dir="ltr">
+          <aside className="post-toc">
             <p className="toc-title">{t("panel.toc")}</p>
             <ul>
               {toc.map((item) => (

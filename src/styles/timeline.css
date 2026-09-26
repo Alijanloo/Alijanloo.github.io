@@ -1,0 +1,481 @@
+/* ============================================================
+   Animated resume timeline — theme-aware
+   Overrides on top of react-vertical-timeline-component.
+   All colors derive from the site's CSS variables (--bg, --card-bg,
+   --border, --text, --text-muted, --heading, --accent, --accent-2),
+   so the timeline follows the site's light/dark theme automatically.
+   ============================================================ */
+
+.tl-section {
+  --tl-card: var(--card-bg);
+  --tl-card-hover: var(--bg-alt);
+  --tl-border: var(--border);
+  --tl-text: var(--heading);
+  --tl-muted: var(--text-muted);
+  --tl-sub: var(--accent-2);
+  --tl-faint: var(--text-muted);
+  --tl-accent: var(--accent-2);
+  --tl-line: color-mix(in srgb, var(--accent-2) 22%, transparent);
+  --tl-line-mid: color-mix(in srgb, var(--accent-2) 45%, transparent);
+  --tl-dot: color-mix(in srgb, var(--accent-2) 70%, #fff);
+  --tl-dot-ring: var(--bg);
+  --tl-glow: color-mix(in srgb, var(--accent-2) 45%, transparent);
+  --tl-tag-bg: var(--tag-bg);
+  --tl-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.35);
+
+  position: relative;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin: 2rem 0;
+  padding: 2.5rem 0 1rem;
+  overflow: clip;
+  isolation: isolate;
+}
+
+/* subtle ambient glow behind the timeline */
+.tl-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    640px 340px at 50% 0%,
+    color-mix(in srgb, var(--accent-2) 7%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ---------- Scroll cue (top indicator arrow) ---------- */
+.tl-scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+  user-select: none;
+}
+.tl-cue-arrow {
+  color: var(--tl-faint);
+  font-size: 0.7rem;
+  line-height: 1;
+  animation: tl-cue-bob 2.2s ease-in-out infinite;
+}
+.tl-cue-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--tl-faint);
+}
+@keyframes tl-cue-bob {
+  0%,
+  100% {
+    transform: translateY(-2px);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   Base library overrides
+   ============================================================ */
+
+/* ---------- Center line: gradient with a soft glow ---------- */
+.tl-root .vertical-timeline::before {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--tl-line) 6%,
+    var(--tl-line-mid) 50%,
+    var(--tl-line) 94%,
+    transparent 100%
+  );
+  width: 2px;
+  box-shadow: 0 0 14px var(--tl-glow);
+}
+
+/* ---------- Entries ---------- */
+.tl-root .vertical-timeline-element {
+  padding: 0.75rem 0;
+  margin: 0;
+}
+.tl-root .vertical-timeline-element::before {
+  top: 34px;
+  border-top: none;
+  border-bottom: none;
+}
+
+/* ---------- Cards ---------- */
+.tl-root .vertical-timeline-element-content {
+  position: relative;
+  box-shadow: var(--tl-shadow);
+  border-radius: 16px;
+  background: var(--tl-card);
+  border: 1px solid var(--tl-border);
+  padding: 1.4rem 1.55rem;
+  max-width: 430px;
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    background-color 0.28s ease,
+    box-shadow 0.28s ease;
+  will-change: transform, opacity;
+}
+/* hover: subtle lift + brighten */
+.tl-root .vertical-timeline-element-content:hover {
+  background: var(--tl-card-hover);
+  border-color: var(--accent);
+  box-shadow: 0 24px 48px -18px rgba(0, 0, 0, 0.4);
+  transform: translateY(-3px);
+}
+
+/* reveal state — the library toggles .bounce-in via IntersectionObserver */
+.tl-root .vertical-timeline--animate .vertical-timeline-element-content.bounce-in {
+  animation: tl-reveal-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.tl-root
+  .vertical-timeline--two-columns
+  .vertical-timeline-element.vertical-timeline-element--right
+  .vertical-timeline-element-content.bounce-in,
+.tl-root
+  .vertical-timeline--two-columns
+  .vertical-timeline-element:nth-child(even):not(.vertical-timeline-element--left)
+  .vertical-timeline-element-content.bounce-in {
+  animation-name: tl-reveal-right;
+}
+/* one-column (tablet/mobile): slide up from below */
+.tl-root .vertical-timeline-element-content.bounce-in {
+  animation-name: tl-reveal-up;
+}
+
+/* left cards slide in from the left, right cards from the right */
+@keyframes tl-reveal-left {
+  from {
+    opacity: 0;
+    transform: translateX(-36px) translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+@keyframes tl-reveal-right {
+  from {
+    opacity: 0;
+    transform: translateX(36px) translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+@keyframes tl-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* hide default connector arrows — replaced by a thin hairline bridge */
+.tl-root .vertical-timeline-element-content-arrow {
+  display: none;
+}
+.tl-root .vertical-timeline-element-content::before {
+  content: "";
+  position: absolute;
+  top: 31px;
+  width: 22px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--tl-line-mid),
+    transparent
+  );
+  pointer-events: none;
+}
+.tl-root .vertical-timeline-element--left .vertical-timeline-element-content::before {
+  right: -22px;
+}
+.tl-root .vertical-timeline-element--right .vertical-timeline-element-content::before {
+  left: -22px;
+  background: linear-gradient(
+    270deg,
+    var(--tl-line-mid),
+    transparent
+  );
+}
+
+/* ---------- Year label ---------- */
+.tl-root .vertical-timeline-element-date {
+  color: var(--tl-faint);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+/* ---------- Dots (glowing nodes) ---------- */
+.tl-root .vertical-timeline-element-icon {
+  position: relative;
+  box-shadow: 0 0 0 4px var(--tl-dot-ring), var(--tl-glow) 0 0 18px,
+    var(--tl-glow) 0 0 42px -6px;
+  background: var(--tl-dot);
+  border: none;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  left: 6px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.tl-root .vertical-timeline-element--right .vertical-timeline-element-icon,
+.tl-root .vertical-timeline-element:nth-child(even) .vertical-timeline-element-icon {
+  left: auto;
+  right: 6px;
+}
+/* pop in when the entry becomes visible */
+.tl-root .vertical-timeline--animate .vertical-timeline-element-icon.bounce-in {
+  animation: tl-dot-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both,
+    tl-dot-pulse 2.8s ease-in-out 0.5s infinite;
+}
+@keyframes tl-dot-pop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes tl-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px var(--tl-dot-ring), var(--tl-glow) 0 0 18px,
+      var(--tl-glow) 0 0 42px -6px;
+  }
+  50% {
+    box-shadow: 0 0 0 4px var(--tl-dot-ring), var(--tl-glow) 0 0 26px,
+      var(--tl-glow) 0 0 60px -6px;
+  }
+}
+/* dot glows brighter on card hover */
+.tl-root .vertical-timeline-element:hover .vertical-timeline-element-icon {
+  box-shadow: 0 0 0 4px var(--tl-dot-ring), var(--tl-glow) 0 0 30px,
+    var(--tl-glow) 0 0 64px -4px;
+}
+
+/* icon emoji sits centered, subtle */
+.tl-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.45rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ============================================================
+   Card typography
+   ============================================================ */
+.tl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.tl-subtitle {
+  margin: 0;
+  color: var(--tl-sub);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tl-title {
+  margin: 0;
+  color: var(--tl-text);
+  font-size: 1.22rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.tl-description {
+  margin: 0;
+  color: var(--tl-muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+.tl-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+}
+.tl-tag {
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--tl-border);
+  background: var(--tl-tag-bg);
+  color: var(--tl-faint);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.tl-root .vertical-timeline-element-content:hover .tl-tag {
+  border-color: var(--accent);
+  color: var(--tl-muted);
+}
+
+/* ============================================================
+   Responsive — tablet keeps two columns from 750px
+   ============================================================ */
+@media (min-width: 750px) and (max-width: 1169px) {
+  /* keep alternating layout: half-width cards floated to each side */
+  .tl-root .vertical-timeline::before {
+    left: 50%;
+    margin-left: -1px;
+  }
+  .tl-root .vertical-timeline-element-content {
+    margin-left: 0;
+    margin-right: 0;
+    width: 44%;
+    padding: 1.15rem 1.25rem;
+    max-width: none;
+    float: left;
+  }
+  .tl-root .vertical-timeline-element--right .vertical-timeline-element-content,
+  .tl-root
+    .vertical-timeline-element:nth-child(even):not(.vertical-timeline-element--left)
+    .vertical-timeline-element-content {
+    float: right;
+  }
+  /* dots centered on the line */
+  .tl-root .vertical-timeline-element-icon {
+    left: auto;
+    right: auto;
+    margin-left: -7px;
+  }
+  .tl-root .vertical-timeline-element--right .vertical-timeline-element-icon,
+  .tl-root .vertical-timeline-element:nth-child(even) .vertical-timeline-element-icon {
+    right: auto;
+    margin-left: -7px;
+  }
+  /* date label mirrors to the outside */
+  .tl-root .vertical-timeline-element-date {
+    position: absolute;
+    width: 100%;
+    left: 110%;
+    top: 4px;
+  }
+  .tl-root
+    .vertical-timeline-element--right
+    .vertical-timeline-element-date,
+  .tl-root
+    .vertical-timeline-element:nth-child(even):not(.vertical-timeline-element--left)
+    .vertical-timeline-element-date {
+    left: auto;
+    right: 110%;
+    text-align: right;
+  }
+  .tl-title {
+    font-size: 1.12rem;
+  }
+}
+
+/* ============================================================
+   Mobile — single column, line on the left, cards to the right
+   ============================================================ */
+@media (max-width: 749px) {
+  .tl-section {
+    margin: 1.5rem 0;
+    padding: 2rem 0 0.75rem;
+  }
+
+  /* line shifts to the left edge */
+  .tl-root .vertical-timeline::before {
+    left: 9px;
+    margin-left: 0;
+  }
+
+  /* all cards stack on the right of the line */
+  .tl-root .vertical-timeline-element-content {
+    margin-left: 42px;
+    margin-right: 0;
+    width: calc(100% - 42px);
+    max-width: none;
+    float: none;
+    padding: 1.1rem 1.15rem;
+    border-radius: 14px;
+  }
+
+  /* hairline bridge always on the left */
+  .tl-root .vertical-timeline-element-content::before,
+  .tl-root .vertical-timeline-element--left .vertical-timeline-element-content::before,
+  .tl-root .vertical-timeline-element--right .vertical-timeline-element-content::before {
+    left: -22px;
+    right: auto;
+    width: 20px;
+    background: linear-gradient(
+      270deg,
+      var(--tl-line-mid),
+      transparent
+    );
+  }
+
+  /* dots align with the left line */
+  .tl-root .vertical-timeline-element-icon,
+  .tl-root .vertical-timeline-element--right .vertical-timeline-element-icon,
+  .tl-root .vertical-timeline-element:nth-child(even) .vertical-timeline-element-icon {
+    left: 3px;
+    right: auto;
+    margin-left: 0;
+  }
+
+  /* date sits above the card */
+  .tl-root .vertical-timeline-element-date {
+    position: static;
+    display: block;
+    margin: 0 0 0.35rem 44px;
+    width: auto;
+    padding: 0;
+    text-align: left;
+  }
+
+  .tl-title {
+    font-size: 1.08rem;
+  }
+  .tl-description {
+    font-size: 0.85rem;
+  }
+  .tl-subtitle {
+    font-size: 0.7rem;
+  }
+}
+
+/* Respect users who prefer no motion */
+@media (prefers-reduced-motion: reduce) {
+  .tl-cue-arrow,
+  .tl-root .vertical-timeline-element-icon {
+    animation: none !important;
+  }
+  .tl-root .vertical-timeline-element-content {
+    animation: none !important;
+  }
+}

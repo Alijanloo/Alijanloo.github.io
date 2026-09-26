@@ -986,6 +986,7 @@ img {
   max-width: 100%;
   overflow-x: auto;
   margin: 1.5rem 0;
+  -webkit-overflow-scrolling: touch;
 }
 .post-content .katex-display {
   max-width: 100%;
@@ -997,6 +998,11 @@ img {
   border-collapse: collapse;
   margin: 0;
   font-size: 0.9rem;
+}
+/* Wide tables keep their natural width and scroll inside .table-wrap
+   instead of being crushed by width:100%. */
+.post-content .table-wrap table {
+  min-width: max-content;
 }
 .post-content th,
 .post-content td {

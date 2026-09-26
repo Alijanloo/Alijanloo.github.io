@@ -816,6 +816,27 @@ img {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+.post-content .mermaid-diagram {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.post-content .mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+.post-content .mermaid-source,
+.post-content .mermaid-error {
+  margin: 0;
+  visibility: hidden;
+}
+.post-content .mermaid-error {
+  visibility: visible;
+}
 .post-content .table-wrap {
   max-width: 100%;
   overflow-x: auto;

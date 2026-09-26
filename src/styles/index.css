@@ -816,18 +816,22 @@ img {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
+.post-content .mermaid-figure {
+  position: relative;
+  margin: 1.5rem 0;
+}
 .post-content .mermaid-diagram {
   background: var(--bg-alt);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1rem 1.25rem;
-  margin: 1.5rem 0;
   overflow-x: auto;
-  text-align: center;
+  cursor: zoom-in;
 }
 .post-content .mermaid-diagram svg {
-  max-width: 100%;
   height: auto;
+  touch-action: pan-x pan-y;
+  pointer-events: none;
 }
 .post-content .mermaid-source,
 .post-content .mermaid-error {
@@ -836,6 +840,116 @@ img {
 }
 .post-content .mermaid-error {
   visibility: visible;
+}
+.post-content .mermaid-expand {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+}
+.post-content .mermaid-figure:hover .mermaid-expand,
+.post-content .mermaid-expand:focus-visible {
+  opacity: 1;
+}
+.post-content .mermaid-expand:hover {
+  color: var(--text);
+}
+@media (hover: none) {
+  .post-content .mermaid-expand {
+    opacity: 1;
+  }
+}
+
+/* Fullscreen diagram viewer */
+.mermaid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  backdrop-filter: blur(4px);
+  animation: mermaid-fade 0.15s ease-out;
+}
+@keyframes mermaid-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.mermaid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.mermaid-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.mermaid-toolbar button:hover {
+  border-color: var(--accent-2);
+}
+.mermaid-zoom-label {
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.mermaid-close {
+  margin-left: auto;
+}
+.mermaid-stage {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+}
+.mermaid-stage:active {
+  cursor: grabbing;
+}
+.mermaid-zoom-svg {
+  transform-origin: center center;
+  will-change: transform;
+}
+.mermaid-zoom-svg svg {
+  max-width: none;
+  max-height: 80vh;
+  height: auto;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
 }
 .post-content .table-wrap {
   max-width: 100%;

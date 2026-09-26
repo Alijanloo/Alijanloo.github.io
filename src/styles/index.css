@@ -28,6 +28,8 @@
   --shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.18);
   --code-bg: #f3f4f6;
   --tag-bg: #eef1f5;
+  --scrollbar-thumb: #c4c9d0;
+  --scrollbar-thumb-hover: #a8aeb6;
 }
 
 /* ---------- Dark theme ---------- */
@@ -45,10 +47,39 @@
   --shadow: 0 8px 28px -12px rgba(0, 0, 0, 0.6);
   --code-bg: #2a2a2e;
   --tag-bg: #2c2c31;
+  --scrollbar-thumb: #3f3f46;
+  --scrollbar-thumb-hover: #52525b;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* ---------- Custom scrollbars (site-styled, theme-aware) ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 html {

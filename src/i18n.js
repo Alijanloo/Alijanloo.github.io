@@ -35,6 +35,9 @@ export const strings = {
       back_home: "Back to home",
       no_posts: "No posts here yet.",
     },
+    about: {
+      download_resume: "Download Resume",
+    },
   },
   fa: {
     site: {
@@ -71,6 +74,9 @@ export const strings = {
       page_not_found: "صفحه پیدا نشد",
       back_home: "بازگشت به خانه",
       no_posts: "هنوز نوشته‌ای اینجا نیست.",
+    },
+    about: {
+      download_resume: "دانلود رزومه",
     },
   },
 };

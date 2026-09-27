@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import {
   VerticalTimeline,
   VerticalTimelineElement,
@@ -9,6 +9,18 @@ import { timelineData, typeIcons } from "../data/timeline.js";
 
 export default function Timeline() {
   const items = useMemo(() => timelineData, []);
+  const [active, setActive] = useState(null);
+
+  const close = useCallback(() => setActive(null), []);
+
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [active, close]);
 
   return (
     <section className="tl-section" aria-label="Career timeline">
@@ -35,7 +47,11 @@ export default function Timeline() {
             icon={<span className="tl-icon">{typeIcons[item.type] ?? "•"}</span>}
             position={index % 2 === 0 ? "left" : "right"}
           >
-            <article className="tl-card">
+            <button
+              type="button"
+              className="tl-card"
+              onClick={() => setActive(item)}
+            >
               {item.subtitle && (
                 <p className="tl-subtitle">{item.subtitle}</p>
               )}
@@ -50,10 +66,74 @@ export default function Timeline() {
                   ))}
                 </ul>
               )}
-            </article>
+              <span className="tl-card-more">Read more →</span>
+            </button>
           </VerticalTimelineElement>
         ))}
       </VerticalTimeline>
+
+      {active && (
+        <div
+          className="tl-overlay"
+          onClick={(e) => {
+            if (e.target.classList.contains("tl-overlay")) close();
+          }}
+        >
+          <div className="tl-modal">
+            <button type="button" className="tl-modal-close" onClick={close}>
+              ×
+            </button>
+            <div className="tl-modal-header">
+              <span className="tl-modal-type">
+                {typeIcons[active.type]} {active.type}
+              </span>
+              <h2>{active.title}</h2>
+              <div className="tl-modal-meta">
+                <span>{active.year}</span>
+                {active.subtitle && (
+                  <>
+                    <span className="dot">·</span>
+                    <span>{active.subtitle}</span>
+                  </>
+                )}
+              </div>
+              {active.tags?.length > 0 && (
+                <div className="tl-modal-tags">
+                  {active.tags.map((tag) => (
+                    <span className="tl-tag" key={tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="tl-modal-body">
+              <p className="tl-modal-label">Overview</p>
+              <p className="tl-modal-plot">{active.description}</p>
+              {active.highlights?.length > 0 && (
+                <div>
+                  <p className="tl-modal-label">Highlights</p>
+                  <ul className="tl-modal-highlights">
+                    {active.highlights.map((h) => (
+                      <li key={h}>{h}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {active.link && (
+                <a
+                  className="tl-modal-link"
+                  href={active.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View project →
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

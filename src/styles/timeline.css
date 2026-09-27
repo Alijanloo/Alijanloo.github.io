@@ -295,6 +295,34 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.tl-card:focus-visible {
+  outline: 2px solid var(--tl-accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+.tl-card-more {
+  margin-top: 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tl-faint);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.tl-root .vertical-timeline-element-content:hover .tl-card-more {
+  color: var(--tl-accent);
+  transform: translateX(3px);
 }
 .tl-subtitle {
   margin: 0;
@@ -466,6 +494,186 @@
   }
   .tl-subtitle {
     font-size: 0.7rem;
+  }
+}
+
+/* ============================================================
+   Detail modal (movie-style, theme-aware)
+   ============================================================ */
+.tl-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  overflow-y: auto;
+}
+.tl-modal {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 680px;
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
+  color: var(--text);
+  animation: tl-modal-in 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  margin: auto;
+}
+.tl-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+.tl-modal-close:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  transform: rotate(90deg);
+}
+.tl-modal-close:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+}
+@keyframes tl-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.tl-modal-header {
+  padding: 26px 26px 20px;
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(
+      420px 160px at 20% 0%,
+      color-mix(in srgb, var(--accent-2) 8%, transparent),
+      transparent 70%
+    ),
+    var(--bg-alt);
+}
+.tl-modal-type {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.7rem;
+}
+.tl-modal-header h2 {
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem;
+  color: var(--heading);
+  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.tl-modal-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.tl-modal-meta .dot {
+  color: var(--border);
+}
+.tl-modal-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.8rem;
+}
+.tl-modal-body {
+  padding: 22px 26px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+.tl-modal-body .tl-modal-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin: 0 0 0.4rem;
+  font-weight: 700;
+}
+.tl-modal-plot {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.7;
+  margin: 0;
+}
+.tl-modal-highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+.tl-modal-highlights li {
+  position: relative;
+  padding-left: 1.15rem;
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.65;
+}
+.tl-modal-highlights li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent-2) 50%, transparent);
+}
+.tl-modal-link {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-2);
+}
+
+@media (max-width: 560px) {
+  .tl-modal-header {
+    padding: 20px 18px 16px;
+  }
+  .tl-modal-body {
+    padding: 18px 18px 20px;
+  }
+  .tl-modal-header h2 {
+    font-size: 1.3rem;
   }
 }
 

@@ -439,6 +439,33 @@ img {
 .empty-note {
   color: var(--text-muted);
 }
+.about-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.about-heading-row .page-heading {
+  margin: 0;
+}
+.btn-download-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+.btn-download-cv:hover {
+  text-decoration: none;
+  opacity: 0.9;
+}
 .route-loading {
   color: var(--text-muted);
   padding: 2rem 0;

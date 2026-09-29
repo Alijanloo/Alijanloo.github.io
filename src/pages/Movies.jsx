@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
+import { Navigate } from "react-router-dom";
 import SEO from "../components/SEO.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import { API_BASE } from "../lib/apiBase.js";
 import "../styles/movies.css";
 
@@ -37,6 +39,7 @@ function textOrNA(value) {
 }
 
 export default function Movies() {
+  const { loading: authLoading, canEdit } = useAuth();
   const [movies, setMovies] = useState([]);
   const [state, setState] = useState("loading"); // loading | ok | logged_out | error | empty
   const [filter, setFilter] = useState("watched");
@@ -75,8 +78,16 @@ export default function Movies() {
   }, []);
 
   useEffect(() => {
-    loadMovies();
-  }, [loadMovies]);
+    if (canEdit) loadMovies();
+  }, [loadMovies, canEdit]);
+
+  if (authLoading) {
+    return <div className="route-loading">Loading…</div>;
+  }
+
+  if (!canEdit) {
+    return <Navigate to="/" replace />;
+  }
 
   const isImdbId = (v) => /^tt\d{7,8}$/.test(v);
 

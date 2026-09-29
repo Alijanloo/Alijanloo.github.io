@@ -38,10 +38,14 @@ const NAV = [
 
 export default function Sidebar({ open, onNavigate }) {
   const { theme, toggleTheme } = useTheme();
-  const { loading: authLoading, loggedIn, user, login, logout } = useAuth();
+  const { loading: authLoading, loggedIn, user, login, logout, canEdit } =
+    useAuth();
   const location = useLocation();
   const projectsActive = location.pathname.startsWith("/projects/");
   const [projectsOpen, setProjectsOpen] = useState(projectsActive);
+  const navItems = canEdit
+    ? NAV
+    : NAV.filter((item) => item.to !== "/movies");
 
   return (
     <aside id="sidebar" className={open ? "is-open" : ""}>
@@ -94,7 +98,7 @@ export default function Sidebar({ open, onNavigate }) {
 
       <nav className="sidebar-nav">
         <ul className="nav">
-          {NAV.map((item) => (
+          {navItems.map((item) => (
             <li className="nav-item" key={item.to}>
               <NavLink
                 to={item.to}

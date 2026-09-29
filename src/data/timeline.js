@@ -6,11 +6,12 @@
 //   year        — small muted label, e.g. "2024 — 2026"
 //   title       — large bold heading of the card
 //   subtitle    — role / organization line
+//   subtitleUrl — optional link for the subtitle (e.g. company website)
 //   type        — "work" | "education" | "research" | "project" (drives the dot icon)
 //   description — short body text shown on the card
 //   highlights  — full bullet points shown in the detail modal
 //   tags        — optional array of skill / tech chips
-//   link        — optional URL shown in the detail modal
+//   link        — optional URL shown as "View project →" in the modal
 
 export const timelineData = [
   {
@@ -45,6 +46,7 @@ export const timelineData = [
     year: "2023 — 2024",
     title: "AI Engineer",
     subtitle: "Vera110",
+    subtitleUrl: "https://www.linkedin.com/company/vera110com/",
     type: "work",
     description:
       "Built deep learning models for ASR, pronunciation assessment, and grammatical error correction for an English-learning app; fine-tuned GPT models with LoRA and sped up inference 1.5× via distillation and quantization.",
@@ -60,6 +62,7 @@ export const timelineData = [
     year: "2024 — 2026",
     title: "AI Engineer",
     subtitle: "ParsTech AI",
+    subtitleUrl: "https://parstechai.com/",
     type: "work",
     description:
       "Architected 10+ LangGraph agents and hierarchical context-aware RAG chunking that lifted RAGAS Faithfulness by 20%; engineered a FastAPI/Redis layer that cut latency by 40% and deployed on AWS ECS with CI/CD.",
@@ -85,6 +88,37 @@ export const timelineData = [
     tags: ["Teaching", "Search Algorithms", "Optimization"],
   },
   {
+    year: "2024",
+    title: "Retail Shelf Monitoring System",
+    subtitle: "Open Source Project",
+    type: "project",
+    description:
+      "Real-time Out-of-Stock detection from existing CCTV feeds — YOLOv12 detection, MobileNetV3 + FAISS SKU embedding search, and edge inference via TensorRT/OpenVINO.",
+    highlights: [
+      "Built a real-time system to detect Out-of-Stock (OOS) items using existing CCTV feeds.",
+      "Leveraged YOLOv12-M for detection and MobileNetV3 + FAISS for high-speed SKU embedding search.",
+      "Implemented frame alignment (ORB/SIFT + RANSAC) and SORT tracking to handle camera movement and occlusion.",
+      "Achieved real-time inference on edge devices via TensorRT/OpenVINO optimization.",
+    ],
+    tags: ["YOLOv12", "FAISS", "TensorRT", "OpenCV"],
+    link: "https://github.com/Alijanloo/Retail-Shelf-Monitoring",
+  },
+  {
+    year: "2025",
+    title: "Pdf2Table — Structured PDF Table Extraction",
+    subtitle: "Open Source Project",
+    type: "project",
+    description:
+      "A Python library that detects, parses, and reconstructs table grids from PDFs — including scanned documents via TrOCR — and outputs clean JSON for downstream NLP and data workflows.",
+    highlights: [
+      "Developed a Python library for structured table extraction from PDFs using Microsoft's Table Transformer models.",
+      "The pipeline detects, parses, and reconstructs table grids, supporting both digital and scanned documents via TrOCR-based OCR.",
+      "Outputs clean JSON representations of table structures, enabling seamless downstream use in NLP and data analysis workflows.",
+    ],
+    tags: ["Table Transformer", "TrOCR", "Python"],
+    link: "https://github.com/Alijanloo/Pdf2Table",
+  },
+  {
     year: "2026",
     title: "Resolving Cryo-EM Structure with Machine Learning",
     subtitle: "International Journal of Molecular Sciences · Co-author",
@@ -102,6 +136,7 @@ export const timelineData = [
     year: "2026 — Present",
     title: "AI Engineer",
     subtitle: "Smilinno",
+    subtitleUrl: "https://smilinno.com/",
     type: "work",
     description:
       "Building topic modeling and hierarchical clustering for CRM file histories and live chatbot conversations on the Hamhoush platform — batch and async pipelines orchestrated with Elasticsearch, MongoDB, RabbitMQ, and Celery.",

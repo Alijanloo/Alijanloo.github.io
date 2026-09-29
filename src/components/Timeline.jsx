@@ -53,7 +53,20 @@ export default function Timeline() {
               onClick={() => setActive(item)}
             >
               {item.subtitle && (
-                <p className="tl-subtitle">{item.subtitle}</p>
+                <p className="tl-subtitle">
+                  {item.subtitleUrl ? (
+                    <a
+                      href={item.subtitleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {item.subtitle}
+                    </a>
+                  ) : (
+                    item.subtitle
+                  )}
+                </p>
               )}
               <h3 className="tl-title">{item.title}</h3>
               <p className="tl-description">{item.description}</p>
@@ -93,7 +106,17 @@ export default function Timeline() {
                 {active.subtitle && (
                   <>
                     <span className="dot">·</span>
-                    <span>{active.subtitle}</span>
+                    {active.subtitleUrl ? (
+                      <a
+                        href={active.subtitleUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {active.subtitle}
+                      </a>
+                    ) : (
+                      <span>{active.subtitle}</span>
+                    )}
                   </>
                 )}
               </div>
